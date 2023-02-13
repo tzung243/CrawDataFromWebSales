@@ -1,13 +1,9 @@
-﻿using System;
+﻿using Nest;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Nest;
-using HtmlAgilityPack;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
-using System.Linq;
 
 namespace CrawDataFromWebSales
 {
@@ -25,7 +21,7 @@ namespace CrawDataFromWebSales
         {
             client = new ElasticClient("craw_data:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvOjQ0MyQ3OGU2Y2Q2OWIwYWQ0NTczYWMwNDNkYThmNDdlZTE0ZiQ4YTM0NTJlMDBlYzU0NzE1YTA1MmQ1MDdjMWRlMDk4NA==",
               new Elasticsearch.Net.ApiKeyAuthenticationCredentials("T3R1c1NJWUJKdUNELWYxb2lhTUM6aWJ5TjNDcmVTYjJpT1BKTFlvUTlFZw=="));
-            
+
             //isLoadsLinks = false;
             DatagirdViewAction.createView(dataGridView);
             await Load_DataGridView();
@@ -35,7 +31,7 @@ namespace CrawDataFromWebSales
         private async Task Load_DataGridView()
         {
             CountRequest countReq = new CountRequest("data-index");
-            long counter = client.Count(countReq).Count;
+            long counter = (await client.CountAsync(countReq)).Count;
             int pageTail;
             if (counter % 50 == 0)
             {
@@ -46,7 +42,7 @@ namespace CrawDataFromWebSales
                 pageTail = (int)counter / 50 + 1;
             }
 
-            this.Invoke(new Action(async () =>
+            dataGridView.Invoke(new Action(async () =>
             {
                 if (pageTail == 1)
                 {
@@ -78,38 +74,35 @@ namespace CrawDataFromWebSales
             }));
         }
 
-        private void button_craw_Click(object sender, EventArgs e)
+        private async void button_craw_Click(object sender, EventArgs e)
         {
             //isLoadsLinks= true;
+            button_craw.Enabled = false;
             string url = textbox_url.Text;
-            getLinks(url);
+            await getLinks(url);
+            button_craw.Enabled = true;
         }
 
-        private void getLinks(String url)
+        private async Task getLinks(String url)
         {
-            var result = new List<string>();
-            if (WebDienMayXanh.Instance.isStore(url))
+            await Task.Run(() =>
             {
-                result = WebDienMayXanh.Instance.getLinkProducts(url);
-            }
-            if (WebNguyenKim.Instance.isStore(url))
-            {
-                result = WebNguyenKim.Instance.getLinkProducts(url);
-            }
-            if (WebDienMayChoLon.Instance.isStore(url))
-            {
-                result = WebDienMayChoLon.Instance.getLinkProducts(url);
-            }
-            if (WebMediaMart.Instance.isStore(url))
-            {
-                result = WebMediaMart.Instance.getLinkProducts(url);
-            }
+                IStore store = (new StoreFactory()).GetStore(url);
+
+                if (store != null)
+                {
+                    var result = store.getLinkProducts(url);
+                    //addLinkToES(result);
+                }
+            });
+
 
             addLinkToES(result);
+            //isLoadsLinks = false;
             
         }
 
-        private async void addLinkToES(List<string> list_url)
+        private async Task addLinkToES(List<string> list_url)
         {
             foreach (var item in list_url)
             {
@@ -121,36 +114,36 @@ namespace CrawDataFromWebSales
                 };
 
                 var response = client.Index(data, request => request.Index("data-index"));
-                await Load_DataGridView();
             }
+            await Load_DataGridView();
         }
-       
+
         private async Task<List<Data>> loadPageNumber(int numberPage)
         {
 
             CountRequest countReq = new CountRequest("data-index");
-           
+
             int numberData = (pageNumber - 1) * 50;
             long counter = client.Count(countReq).Count;
 
 
             Nest.ISearchResponse<Data> response;
-            
-                response = await client.SearchAsync<Data>(n => n
-                .Index("data-index")
-                .Query(q => q
-                    .MatchAll()
-                    )
-                .Sort((sd) =>
-                {
-                    sd.Descending(new Field("time"));
-                    return sd;
-                })
-                .From(pageNumber)
-                .Size(50)
-                );
-          
-                
+
+            response = await client.SearchAsync<Data>(n => n
+            .Index("data-index")
+            .Query(q => q
+                .MatchAll()
+                )
+            .Sort((sd) =>
+            {
+                sd.Descending(new Field("time"));
+                return sd;
+            })
+            .From(pageNumber)
+            .Size(50)
+            );
+
+
 
             if (!response.IsValid)
             {
@@ -193,15 +186,22 @@ namespace CrawDataFromWebSales
 
         private void button_next_Click(object sender, EventArgs e)
         {
-            pageNumber++;
-            Load_DataGridView();
+            Task.Run(async () =>
+            {
+                pageNumber++;
+                await Load_DataGridView();
+            });
 
         }
 
         private void button_prev_Click(object sender, EventArgs e)
         {
-            pageNumber--;
-            Load_DataGridView();
+            Task.Run(async () =>
+            {
+                pageNumber--;
+                await Load_DataGridView();
+            });
+
         }
     }
 }

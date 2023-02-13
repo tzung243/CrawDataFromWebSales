@@ -5,9 +5,6 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CrawDataFromWebSales
@@ -74,7 +71,7 @@ namespace CrawDataFromWebSales
             }
 
 
-            hrefTags.AddRange(getLinkProducts(driver));
+                hrefTags.AddRange(getLinkProducts(driver));
 
             driver.Close();
             driver.Quit();

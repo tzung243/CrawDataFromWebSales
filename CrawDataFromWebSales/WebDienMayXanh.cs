@@ -1,9 +1,8 @@
-﻿using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 
 namespace CrawDataFromWebSales
 {
@@ -13,39 +12,45 @@ namespace CrawDataFromWebSales
         private WebDienMayXanh() { }
         private static WebDienMayXanh instance;
 
-        public static WebDienMayXanh Instance { get { 
+        public static WebDienMayXanh Instance
+        {
+            get
+            {
                 if (instance == null)
                 {
                     instance = new WebDienMayXanh();
                 }
-                return instance; } }
+                return instance;
+            }
+        }
 
         private static string host = "www.dienmayxanh.com";
 
         public List<string> getLinkProducts(string url)
         {
-            try
+            using (WebDriver driver = new ChromeDriver())
             {
-                WebDriver driver = new ChromeDriver();
-                driver.Navigate().GoToUrl(url);
-
-                List<IWebElement> links = driver.FindElements(By.CssSelector("a.main-contain[href]")).ToList();
-                List<string> hrefTags = new List<string>();
-
-                foreach (IWebElement link in links)
+                try
                 {
-                    string href = link.GetAttribute("href");
+                    driver.Navigate().GoToUrl(url);
 
-                    hrefTags.Add(href);
+                    List<IWebElement> links = driver.FindElements(By.CssSelector("a.main-contain[href]")).ToList();
+                    List<string> hrefTags = new List<string>();
+
+                    foreach (IWebElement link in links)
+                    {
+                        string href = link.GetAttribute("href");
+
+                        hrefTags.Add(href);
+                    }
+                    return hrefTags.Distinct().ToList();
                 }
-                driver.Close();
-                return hrefTags.Distinct().ToList();
+                catch
+                {
+                    return null;
+                }
             }
-            catch
-            {
-                return null;    
-            }
-            
+
         }
 
         public bool isStore(string url)
