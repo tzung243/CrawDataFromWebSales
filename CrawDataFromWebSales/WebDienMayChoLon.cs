@@ -36,7 +36,7 @@ namespace CrawDataFromWebSales
             driver.Navigate().GoToUrl(url);
 
             List<string> hrefTags = new List<string>();
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(10));
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(30));
             while (true)
             {
                 try

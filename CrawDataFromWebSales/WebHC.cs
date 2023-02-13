@@ -26,11 +26,10 @@ namespace CrawDataFromWebSales
         }
 
         private static string host = "hc.com.vn";
-        public async Task<List<string>> getLinkProducts(string url)
+        public List<string> getLinkProducts(string url)
         {
 
-            using (var driver = new ChromeDriver())
-            {
+            var driver = new ChromeDriver();
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
                 driver.Navigate().GoToUrl(url);
 
@@ -55,21 +54,18 @@ namespace CrawDataFromWebSales
             return hrefTags.Distinct().ToList();
         }
 
-        private async Task<List<string>> getLinkProductsInPagination(WebDriver driver)
+        private List<string> getLinkProductsInPagination(WebDriver driver)
         {
-            await Task.Run(() =>
+            List<IWebElement> links = driver.FindElements(By.XPath("//h3[@id]/a")).ToList();
+            List<string> hrefTags = new List<string>();
+            foreach (IWebElement link in links)
             {
-                List<IWebElement> links = driver.FindElements(By.XPath("//h3[@id]/a")).ToList();
-                List<string> hrefTags = new List<string>();
-                foreach (IWebElement link in links)
-                {
-                    string href = link.GetAttribute("href");
+                string href = link.GetAttribute("href");
 
-                    hrefTags.Add(href);
+                hrefTags.Add(href);
 
-                }
-                return hrefTags.Distinct().ToList();
-            });
+            }
+            return hrefTags.Distinct().ToList();
         }
 
         public bool isStore(string url)

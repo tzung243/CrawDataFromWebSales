@@ -5,6 +5,7 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace CrawDataFromWebSales
@@ -34,7 +35,7 @@ namespace CrawDataFromWebSales
             List<string> hrefTags = new List<string>();
 
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
-            while(true)
+            while (true)
             {
                 try
                 {
@@ -70,8 +71,7 @@ namespace CrawDataFromWebSales
 
             }
 
-
-                hrefTags.AddRange(getLinkProducts(driver));
+            hrefTags.AddRange(getLinkProducts(driver));
 
             driver.Close();
             driver.Quit();
