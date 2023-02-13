@@ -1,10 +1,9 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace CrawDataFromWebSales
 {
@@ -26,45 +25,24 @@ namespace CrawDataFromWebSales
         }
 
         private static string host = "hc.com.vn";
-        public async Task<List<string>> getLinkProducts(string url)
+        public List<string> getLinkProducts(string url)
         {
 
             using (var driver = new ChromeDriver())
             {
-                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
                 driver.Navigate().GoToUrl(url);
 
-                IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
-
-                var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
                 int pageIndex = 1;
                 List<string> hrefTags = new List<string>();
                 while (true)
                 {
                     try
                     {
-                        //Thread.Sleep(5 * 1000);
-                        var links = await getLinkProductsInPagination(driver);
-                        hrefTags.AddRange(links);
-
-                        var page = wait.Until((d) =>
-                        {
-                            IWebElement element = d.FindElement(By.XPath($"//a[@data-pageid = '{pageIndex++}']"));
-                            if (element == null) return null;
-
-                            if (element.Displayed &&
-                                element.Enabled &&
-                                element.GetAttribute("href") != null)
-                            {
-                                return element;
-                            }
-
-                            return null;
-                        });
-
-                        js.ExecuteAsyncScript("arguments[0].click();", page);
-
-                        //page.Click();
+                        Thread.Sleep(3000);
+                        hrefTags.AddRange(GetLinkProductsInPagination(driver));
+                        IWebElement page = driver.FindElement(By.XPath($"//a[@data-pageid = '{++pageIndex}']"));
+                        page.Click();
 
                     }
                     catch
@@ -72,25 +50,24 @@ namespace CrawDataFromWebSales
                         break;
                     }
                 }
+                driver.Quit();
                 return hrefTags.Distinct().ToList();
             }
         }
 
-        private async Task<List<string>> getLinkProductsInPagination(WebDriver driver)
+        private List<string> GetLinkProductsInPagination(WebDriver driver)
         {
-            await Task.Run(() =>
+
+            List<IWebElement> links = driver.FindElements(By.XPath("//h3[@id]/a")).ToList();
+            List<string> hrefTags = new List<string>();
+            foreach (IWebElement link in links)
             {
-                List<IWebElement> links = driver.FindElements(By.XPath("//h3[@id]/a")).ToList();
-                List<string> hrefTags = new List<string>();
-                foreach (IWebElement link in links)
-                {
-                    string href = link.GetAttribute("href");
+                string href = link.GetAttribute("href");
 
-                    hrefTags.Add(href);
+                hrefTags.Add(href);
 
-                }
-                return hrefTags.Distinct().ToList();
-            });
+            }
+            return hrefTags.Distinct().ToList();
         }
 
         public bool isStore(string url)
