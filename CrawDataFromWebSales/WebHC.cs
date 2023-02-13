@@ -1,10 +1,9 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace CrawDataFromWebSales
 {
@@ -29,33 +28,36 @@ namespace CrawDataFromWebSales
         public List<string> getLinkProducts(string url)
         {
 
-            var driver = new ChromeDriver();
-                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+            using (var driver = new ChromeDriver())
+            {
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
                 driver.Navigate().GoToUrl(url);
 
-            List<string> hrefTags = new List<string>();
-            while (true)
-            {
-                hrefTags.AddRange(getLinkProductsInPagination(driver));
-                try
+                int pageIndex = 1;
+                List<string> hrefTags = new List<string>();
+                while (true)
                 {
-                    IWebElement next = driver.FindElement(By.CssSelector("a.btn_next"));
-                    driver.Navigate().GoToUrl(next.GetAttribute("href"));
-                }
-                catch
-                {
+                    try
+                    {
+                        Thread.Sleep(3000);
+                        hrefTags.AddRange(GetLinkProductsInPagination(driver));
+                        IWebElement page = driver.FindElement(By.XPath($"//a[@data-pageid = '{++pageIndex}']"));
+                        page.Click();
 
-                    break;
+                    }
+                    catch
+                    {
+                        break;
+                    }
                 }
+                driver.Quit();
+                return hrefTags.Distinct().ToList();
             }
-
-            driver.Close();
-            driver.Quit();
-            return hrefTags.Distinct().ToList();
         }
 
-        private List<string> getLinkProductsInPagination(WebDriver driver)
+        private List<string> GetLinkProductsInPagination(WebDriver driver)
         {
+
             List<IWebElement> links = driver.FindElements(By.XPath("//h3[@id]/a")).ToList();
             List<string> hrefTags = new List<string>();
             foreach (IWebElement link in links)
