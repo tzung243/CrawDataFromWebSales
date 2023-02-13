@@ -1,12 +1,8 @@
-﻿using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Threading;
 
 namespace CrawDataFromWebSales
 {
@@ -30,39 +26,40 @@ namespace CrawDataFromWebSales
         private static string host = "dienmaycholon.vn";
         public List<string> getLinkProducts(string url)
         {
-            WebDriver driver = new ChromeDriver();
-            driver.Navigate().GoToUrl(url);
-            while (true)
+            using (WebDriver driver = new ChromeDriver())
             {
-                try
+                driver.Navigate().GoToUrl(url);
+                while (true)
                 {
-                    IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
-
-                    bool ctn = (bool) jsExecutor.ExecuteScript("" +
-                        "let seeMore = document.querySelector('div.see_more_cat');\n" +
-                        "if (!seeMore) {\n" +
-                        "return false;\n" + 
-                        "}\n" +
-                        "seeMore.click();\n" +
-                        "return true;\n");
-                    if (!ctn)
+                    try
                     {
+                        IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+
+                        bool ctn = (bool)jsExecutor.ExecuteScript("" +
+                            "let seeMore = document.querySelector('div.see_more_cat');\n" +
+                            "if (!seeMore) {\n" +
+                            "return false;\n" +
+                            "}\n" +
+                            "seeMore.click();\n" +
+                            "return true;\n");
+                        if (!ctn)
+                        {
+                            break;
+                        }
+                    }
+                    catch
+
+                    {
+
                         break;
                     }
                 }
-                catch 
+                List<string> hrefTags = new List<string>();
 
-                {
+                hrefTags.AddRange(getLinkProducts(driver));
 
-                    break;
-                }
+                return hrefTags.Distinct().ToList();
             }
-            List<string> hrefTags = new List<string>();
-
-            hrefTags.AddRange(getLinkProducts(driver));
-
-            driver.Close();
-            return hrefTags.Distinct().ToList();
         }
 
         private List<string> getLinkProducts(WebDriver driver)

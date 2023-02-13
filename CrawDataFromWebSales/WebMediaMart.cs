@@ -4,9 +4,6 @@ using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CrawDataFromWebSales
@@ -31,31 +28,32 @@ namespace CrawDataFromWebSales
         private static string host = "mediamart.vn";
         public List<string> getLinkProducts(string url)
         {
-            WebDriver driver = new ChromeDriver();
-            driver.Navigate().GoToUrl(url);
-
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(2));
-            wait.Until(drv =>
+            using (WebDriver driver = new ChromeDriver())
             {
-                try
+                driver.Navigate().GoToUrl(url);
+
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(2));
+                wait.Until(drv =>
                 {
-                    IWebElement seeMore = drv.FindElement(By.CssSelector("a.seemoreproducts"));
-                    seeMore.Click();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                    return false;
-                }
+                    try
+                    {
+                        IWebElement seeMore = drv.FindElement(By.CssSelector("a.seemoreproducts"));
+                        seeMore.Click();
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                        return false;
+                    }
 
-                return true;
-            });
-            List<string> hrefTags = new List<string>();
+                    return true;
+                });
+                List<string> hrefTags = new List<string>();
 
-            hrefTags.AddRange(getLinkProducts(driver));
+                hrefTags.AddRange(getLinkProducts(driver));
 
-            driver.Close();
-            return hrefTags.Distinct().ToList();
+                return hrefTags.Distinct().ToList();
+            }
         }
 
         private List<string> getLinkProducts(WebDriver driver)

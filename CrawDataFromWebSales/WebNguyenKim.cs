@@ -1,11 +1,8 @@
-﻿using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CrawDataFromWebSales
 {
@@ -29,27 +26,29 @@ namespace CrawDataFromWebSales
         private static string host = "www.nguyenkim.com";
         public List<string> getLinkProducts(string url)
         {
-            WebDriver driver = new ChromeDriver();
-            driver.Navigate().GoToUrl(url);
-           
-            List<string> hrefTags = new List<string>();
-            while (true)
+            using (WebDriver driver = new ChromeDriver())
             {
-                hrefTags.AddRange(getLinkProductsInPagination(driver));
-                try
-                {
-                    IWebElement next = driver.FindElement(By.CssSelector("a.btn_next"));
-                    driver.Navigate().GoToUrl(next.GetAttribute("href"));
-                }
-                catch
-                {
+                driver.Navigate().GoToUrl(url);
 
-                    break;
-                }
-            } 
+                List<string> hrefTags = new List<string>();
+                while (true)
+                {
+                    hrefTags.AddRange(getLinkProductsInPagination(driver));
+                    try
+                    {
+                        IWebElement next = driver.FindElement(By.CssSelector("a.btn_next"));
+                        driver.Navigate().GoToUrl(next.GetAttribute("href"));
+                    }
+                    catch
+                    {
 
-            driver.Close();
-            return hrefTags.Distinct().ToList();
+                        break;
+                    }
+                }
+
+                return hrefTags.Distinct().ToList();
+            }
+
         }
 
         private List<string> getLinkProductsInPagination(WebDriver driver)
@@ -61,7 +60,7 @@ namespace CrawDataFromWebSales
                 string href = link.GetAttribute("href");
 
                 hrefTags.Add(href);
-                
+
             }
             return hrefTags.Distinct().ToList();
         }
