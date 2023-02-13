@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using Nest;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
@@ -33,28 +34,50 @@ namespace CrawDataFromWebSales
         {
             WebDriver driver = new ChromeDriver();
             driver.Navigate().GoToUrl(url);
+            List<string> hrefTags = new List<string>();
 
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(2));
-            wait.Until(drv =>
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+            while(true)
             {
                 try
                 {
-                    IWebElement seeMore = drv.FindElement(By.CssSelector("a.seemoreproducts"));
-                    seeMore.Click();
+                    Thread.Sleep(5000);
+                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+
+                    var page = wait.Until((d) =>
+                    {
+                        try
+                        {
+                            IWebElement seeMore = d.FindElement(By.CssSelector("a.seemoreproducts"));
+                            if (seeMore.Displayed && seeMore.Enabled && seeMore.GetAttribute("href") != null)
+                            {
+                                return seeMore;
+                            }
+                        }
+                        catch
+                        {
+                            return null;
+                        }
+
+                        return null;
+                    });
+
+                    page.Click();
+
                 }
-                catch (Exception e)
+                catch
                 {
-                    MessageBox.Show(e.Message);
-                    return false;
+                    break;
                 }
 
-                return true;
-            });
-            List<string> hrefTags = new List<string>();
+
+            }
+
 
             hrefTags.AddRange(getLinkProducts(driver));
 
             driver.Close();
+            driver.Quit();
             return hrefTags.Distinct().ToList();
         }
 

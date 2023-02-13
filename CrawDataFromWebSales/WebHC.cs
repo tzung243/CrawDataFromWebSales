@@ -48,6 +48,7 @@ namespace CrawDataFromWebSales
             }
 
             driver.Close();
+            driver.Quit();
             return hrefTags.Distinct().ToList();
         }
 

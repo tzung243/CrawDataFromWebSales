@@ -106,7 +106,6 @@ namespace CrawDataFromWebSales
             }
 
             addLinkToES(result);
-            //isLoadsLinks = false;
             
         }
 

@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using OpenQA.Selenium.Support.UI;
+using static System.Windows.Forms.LinkLabel;
 
 namespace CrawDataFromWebSales
 {
@@ -32,23 +34,37 @@ namespace CrawDataFromWebSales
         {
             WebDriver driver = new ChromeDriver();
             driver.Navigate().GoToUrl(url);
+
+            List<string> hrefTags = new List<string>();
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(10));
             while (true)
             {
                 try
                 {
-                    IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+                    Thread.Sleep(5000);
+                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
 
-                    bool ctn = (bool) jsExecutor.ExecuteScript("" +
-                        "let seeMore = document.querySelector('div.see_more_cat');\n" +
-                        "if (!seeMore) {\n" +
-                        "return false;\n" + 
-                        "}\n" +
-                        "seeMore.click();\n" +
-                        "return true;\n");
-                    if (!ctn)
+                    var page = wait.Until((d) =>
                     {
-                        break;
-                    }
+                        try
+                        {
+                            IWebElement seeMore = d.FindElement(By.XPath($"//*[@id=\"js-scroll\"]/div/div[2]/div[4]/div/div[2]"));
+                            //IWebElement seeMore = d.FindElement(By.CssSelector("div.see_more_cat, button[@count]"));
+                            if (seeMore.Displayed)
+                            {
+                                return seeMore;
+                            }
+                        }
+                        catch
+                        {
+                            return null;
+                        }
+
+                        return null;
+                    });
+
+                    page.Click();
+
                 }
                 catch 
 
@@ -57,17 +73,19 @@ namespace CrawDataFromWebSales
                     break;
                 }
             }
-            List<string> hrefTags = new List<string>();
+           
 
             hrefTags.AddRange(getLinkProducts(driver));
 
+            driver.Quit();
             driver.Close();
+            
             return hrefTags.Distinct().ToList();
         }
 
         private List<string> getLinkProducts(WebDriver driver)
         {
-            List<IWebElement> links = driver.FindElements(By.CssSelector("div.product div.product_block_img a.img_pro[href]")).ToList();
+            List<IWebElement> links = driver.FindElements(By.CssSelector("a.img_pro[href]")).ToList();
             List<string> hrefTags = new List<string>();
             foreach (IWebElement link in links)
             {
