@@ -33,54 +33,31 @@ namespace CrawDataFromWebSales
         public List<string> getLinkProducts(string url)
         {
             WebDriver driver = new ChromeDriver();
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
             driver.Navigate().GoToUrl(url);
 
             List<string> hrefTags = new List<string>();
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromMinutes(30));
             while (true)
             {
                 try
                 {
-                    Thread.Sleep(5000);
-                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-
-                    var page = wait.Until((d) =>
-                    {
-                        try
-                        {
-                            IWebElement seeMore = d.FindElement(By.XPath($"//*[@id=\"js-scroll\"]/div/div[2]/div[4]/div/div[2]"));
-                            //IWebElement seeMore = d.FindElement(By.CssSelector("div.see_more_cat, button[@count]"));
-                            if (seeMore.Displayed)
-                            {
-                                return seeMore;
-                            }
-                        }
-                        catch
-                        {
-                            return null;
-                        }
-
-                        return null;
-                    });
-
-                    page.Click();
+                    IWebElement seeMore = driver.FindElement(By.XPath($"//*[@id=\"js-scroll\"]/div/div[2]/div[4]/div/div[2]/button"));
+                    seeMore.Click();
 
                 }
-                catch 
+                catch
 
-                    {
+                {
 
                     break;
                 }
             }
-           
 
-                hrefTags.AddRange(getLinkProducts(driver));
+            hrefTags = getLinkProducts(driver);
 
             driver.Quit();
-            driver.Close();
-            
-            return hrefTags.Distinct().ToList();
+
+            return hrefTags;
         }
 
         private List<string> getLinkProducts(WebDriver driver)
@@ -89,9 +66,18 @@ namespace CrawDataFromWebSales
             List<string> hrefTags = new List<string>();
             foreach (IWebElement link in links)
             {
-                string href = link.GetAttribute("href");
+                try
+                {
+                    string href = link.GetAttribute("href");
 
-                hrefTags.Add(href);
+                    hrefTags.Add(href);
+
+                }
+                catch
+                {
+                    continue;
+                }
+
 
             }
             return hrefTags.Distinct().ToList();
@@ -106,6 +92,11 @@ namespace CrawDataFromWebSales
         public bool isStore(Uri url)
         {
             return url.Host.Equals(host);
+        }
+
+        public string getDomain()
+        {
+            return host;
         }
     }
 }

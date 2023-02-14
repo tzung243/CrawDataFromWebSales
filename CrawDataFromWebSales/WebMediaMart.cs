@@ -31,51 +31,33 @@ namespace CrawDataFromWebSales
         public List<string> getLinkProducts(string url)
         {
             WebDriver driver = new ChromeDriver();
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
             driver.Navigate().GoToUrl(url);
-            List<string> hrefTags = new List<string>();
 
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
+            List<string> hrefTags = new List<string>();
             while (true)
             {
                 try
                 {
-                    Thread.Sleep(5000);
-                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-
-                    var page = wait.Until((d) =>
-                    {
-                        try
-                        {
-                            IWebElement seeMore = d.FindElement(By.CssSelector("a.seemoreproducts"));
-                            if (seeMore.Displayed && seeMore.Enabled && seeMore.GetAttribute("href") != null)
-                            {
-                                return seeMore;
-                            }
-                        }
-                        catch
-                        {
-                            return null;
-                        }
-
-                        return null;
-                    });
-
-                    page.Click();
+                    Thread.Sleep(2000);
+                    IWebElement seeMore = driver.FindElement(By.CssSelector("a.seemoreproducts"));
+                    seeMore.Click();
 
                 }
                 catch
+
                 {
+
                     break;
                 }
-
-
             }
 
-            hrefTags.AddRange(getLinkProducts(driver));
+            hrefTags = getLinkProducts(driver);
 
-            driver.Close();
             driver.Quit();
-            return hrefTags.Distinct().ToList();
+
+            return hrefTags;
+            
         }
 
         private List<string> getLinkProducts(WebDriver driver)
@@ -101,6 +83,10 @@ namespace CrawDataFromWebSales
         public bool isStore(Uri url)
         {
             return url.Host.Equals(host);
+        }
+        public string getDomain()
+        {
+            return host;
         }
     }
 }

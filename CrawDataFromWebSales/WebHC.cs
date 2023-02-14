@@ -80,5 +80,9 @@ namespace CrawDataFromWebSales
         {
             return url.Host.Equals(host);
         }
+        public string getDomain()
+        {
+            return host;
+        }
     }
 }

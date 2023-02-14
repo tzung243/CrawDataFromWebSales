@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,9 +47,8 @@ namespace CrawDataFromWebSales
                     }
                 }
 
-            driver.Close();
             driver.Quit();
-            return hrefTags.Distinct().ToList();
+            return hrefTags;
         }
 
         }
@@ -77,5 +77,11 @@ namespace CrawDataFromWebSales
         {
             return url.Host.Equals(host);
         }
+
+        public string getDomain()
+        {
+            return host;
+        }
+
     }
 }

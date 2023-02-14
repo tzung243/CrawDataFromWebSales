@@ -9,5 +9,7 @@ namespace CrawDataFromWebSales
         bool isStore(string url);
 
         bool isStore(Uri url);
+
+        string getDomain();
     }
 }

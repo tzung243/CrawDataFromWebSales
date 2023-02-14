@@ -33,13 +33,13 @@ namespace CrawDataFromWebSales
             CountRequest countReq = new CountRequest("data-index");
             long counter = (await client.CountAsync(countReq)).Count;
             int pageTail;
-            if (counter % 50 == 0)
+            if (counter % 20 == 0)
             {
-                pageTail = (int)counter / 50;
+                pageTail = (int)counter / 20;
             }
             else
             {
-                pageTail = (int)counter / 50 + 1;
+                pageTail = (int)counter / 20 + 1;
             }
 
             dataGridView.Invoke(new Action(async () =>
@@ -88,27 +88,32 @@ namespace CrawDataFromWebSales
             await Task.Run(() =>
             {
                 IStore store = (new StoreFactory()).GetStore(url);
-
+                List<string> result = new List<string>();
+                string domain = null;
                 if (store != null)
                 {
-                    var result = store.getLinkProducts(url);
-                    //addLinkToES(result);
+                    result = store.getLinkProducts(url);
+                    domain = store.getDomain();
+                    
                 }
+                Task task = addLinkToES(result,domain);
             });
 
             //isLoadsLinks = false;
             
         }
 
-        private async Task addLinkToES(List<string> list_url)
+        private async Task addLinkToES(List<string> list_url, string _domain)
         {
+            if (list_url.Count == 0) { return; }
             foreach (var item in list_url)
             {
                 Data data = new Data()
                 {
                     url = item,
                     status = 0,
-                    time = DateTime.Now
+                    time = DateTime.Now,
+                    domain = _domain
                 };
 
                 var response = client.Index(data, request => request.Index("data-index"));
@@ -121,7 +126,7 @@ namespace CrawDataFromWebSales
 
             CountRequest countReq = new CountRequest("data-index");
 
-            int numberData = (pageNumber - 1) * 50;
+            int numberData = (pageNumber - 1) * 20;
             long counter = client.Count(countReq).Count;
 
 
@@ -138,7 +143,7 @@ namespace CrawDataFromWebSales
                 return sd;
             })
             .From(pageNumber)
-            .Size(50)
+            .Size(20)
             );
 
 
