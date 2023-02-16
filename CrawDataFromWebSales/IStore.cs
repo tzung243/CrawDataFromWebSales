@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenQA.Selenium.DevTools.V107.Database;
+using System;
 using System.Collections.Generic;
 namespace CrawDataFromWebSales
 {
@@ -11,5 +12,8 @@ namespace CrawDataFromWebSales
         bool isStore(Uri url);
 
         string getDomain();
+
+        void getData(Data data);
+
     }
 }

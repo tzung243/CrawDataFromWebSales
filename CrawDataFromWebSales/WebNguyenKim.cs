@@ -52,7 +52,6 @@ namespace CrawDataFromWebSales
         }
 
         }
-
         private List<string> getLinkProductsInPagination(WebDriver driver)
         {
             List<IWebElement> links = driver.FindElements(By.CssSelector("a.product-render[href]")).ToList();
@@ -83,5 +82,9 @@ namespace CrawDataFromWebSales
             return host;
         }
 
+        public void getData(Data data)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
