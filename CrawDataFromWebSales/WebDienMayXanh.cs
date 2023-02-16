@@ -84,5 +84,10 @@ namespace CrawDataFromWebSales
         {
             return host;
         }
+
+        public async void getData(Data data)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

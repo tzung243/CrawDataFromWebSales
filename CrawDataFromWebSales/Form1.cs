@@ -1,9 +1,14 @@
-﻿using Nest;
+﻿using Elasticsearch.Net.Specification.MachineLearningApi;
+using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
+using Timer = System.Timers.Timer;
+
 
 namespace CrawDataFromWebSales
 {
@@ -11,7 +16,7 @@ namespace CrawDataFromWebSales
     {
         ElasticClient client;
         int pageNumber = 1;
-        //private bool isLoadsLinks;
+        private bool isLoadsLinks;
         public Form1()
         {
             InitializeComponent();
@@ -22,9 +27,10 @@ namespace CrawDataFromWebSales
             client = new ElasticClient("craw_data:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvOjQ0MyQ3OGU2Y2Q2OWIwYWQ0NTczYWMwNDNkYThmNDdlZTE0ZiQ4YTM0NTJlMDBlYzU0NzE1YTA1MmQ1MDdjMWRlMDk4NA==",
               new Elasticsearch.Net.ApiKeyAuthenticationCredentials("T3R1c1NJWUJKdUNELWYxb2lhTUM6aWJ5TjNDcmVTYjJpT1BKTFlvUTlFZw=="));
 
-            //isLoadsLinks = false;
+            isLoadsLinks = false;
             DatagirdViewAction.createView(dataGridView);
             await Load_DataGridView();
+            getData();
         }
 
 
@@ -76,7 +82,7 @@ namespace CrawDataFromWebSales
 
         private async void button_craw_Click(object sender, EventArgs e)
         {
-            //isLoadsLinks= true;
+            isLoadsLinks= true;
             button_craw.Enabled = false;
             string url = textbox_url.Text;
             await getLinks(url);
@@ -99,7 +105,7 @@ namespace CrawDataFromWebSales
                 Task task = addLinkToES(result,domain);
             });
 
-            //isLoadsLinks = false;
+            isLoadsLinks = false;
             
         }
 
@@ -112,7 +118,7 @@ namespace CrawDataFromWebSales
                 {
                     url = item,
                     status = 0,
-                    time = DateTime.Now,
+                    time_create = DateTime.Now,
                     domain = _domain
                 };
 
@@ -139,7 +145,7 @@ namespace CrawDataFromWebSales
                 )
             .Sort((sd) =>
             {
-                sd.Descending(new Field("time"));
+                sd.Descending(new Field("time_create"));
                 return sd;
             })
             .From(pageNumber)
@@ -205,6 +211,111 @@ namespace CrawDataFromWebSales
                 await Load_DataGridView();
             });
 
+        }
+
+        private void getData()
+        {
+            var timer = new Timer(6000);
+            timer.Elapsed += async (s, e) =>
+            {
+
+                if (!isLoadsLinks)
+                {
+                    await getDataAsync();
+                    Load_DataGridView();
+                }
+            };
+
+            timer.AutoReset = true;
+            timer.Enabled = true;
+            timer.Start();
+        }
+
+        private async Task getDataAsync()
+        {
+            var data = await getLinkCraw(client);
+            if (data != null)
+            {
+                ParallelLoopResult result = Parallel.ForEach(data, getData);
+            }
+        }
+
+        private async Task<List<Data>> getLinkCraw(ElasticClient client)
+        {
+            var response = await client.SearchAsync<Data>(n => n
+            .Index("data-index")
+            .From(0)
+            .Query(q => q
+                .MatchAll())
+            .Sort((sd) =>
+            {
+                sd.Ascending(new Field("time_create"));
+                return sd;
+            })
+            .Size(30)
+            );
+
+            if (!response.IsValid)
+            {
+                return null;
+            }
+            else
+            {
+                return response.Hits.Select(
+                hit =>
+                {
+                    hit.Source._id = hit.Id;
+                    return hit.Source;
+                }).ToList();
+            }
+        }
+
+        private void getData(Data data)
+        {
+            IStore store = (new StoreFactory()).GetStore(data.url);
+            store.getData(data);
+            updateData(data);
+        }
+
+        private async void updateData(Data data)
+        {
+            var price = getPriceByID(data);
+
+            var response = await client.UpdateAsync<Data, object>(data._id, (ud) =>
+            {
+               
+                ud.Doc(new Data
+                {
+                    url = data.url,
+                    price= data.price,
+                    time_load = DateTime.Now,
+                    status = data.status
+                }).Index("data-index");
+                return ud;
+            });
+        }
+
+        private async Task<string> getPriceByID(Data data)
+        {
+            var response = await client.SearchAsync<Data>(s => s
+            .Index("data-index")
+            .Query(q => q
+                .Match(
+                    matchSelector => matchSelector.Field("_id").Query(data._id)
+                    )
+                )
+            .SourceQueryString("Price")
+            );
+
+            if (!response.IsValid)
+            {
+                return null;
+
+            }
+            else
+            {
+                return response.Hits.ToString();
+            }
         }
     }
 }
