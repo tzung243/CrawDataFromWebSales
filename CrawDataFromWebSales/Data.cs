@@ -11,7 +11,7 @@ namespace CrawDataFromWebSales
         public string _id { get; set; }
         public string url { get; set; }
         public string name { get; set; }
-        public uint price { get; set; }
+        public ulong price { get; set; }
 
         public string description { get; set; }
         public DateTime? time_create { get; set; }

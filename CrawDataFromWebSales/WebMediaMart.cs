@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CrawDataFromWebSales
@@ -89,7 +90,7 @@ namespace CrawDataFromWebSales
             return host;
         }
 
-        public void getData(Data data)
+        public async Task<Data> getData(Data data)
         {
             throw new NotImplementedException();
         }
