@@ -120,7 +120,7 @@ namespace CrawDataFromWebSales
 
                     data.status = 1;
                     data.name = name;
-                    data.price = Convert.ToUInt64(price.Trim(), 16); ;
+                    data.price = price.Trim();
                     data.description = description;
 
                 }
@@ -128,7 +128,7 @@ namespace CrawDataFromWebSales
                 {
                     data.status = 2;
                     tokenSource.Cancel();
-                    MessageBox.Show(e.Message);
+                    //MessageBox.Show(e.Message);
                 }
             };
             Task crawlTask = new Task(get_Data, tokenSource.Token);

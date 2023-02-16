@@ -149,7 +149,7 @@ namespace CrawDataFromWebSales
                 sd.Descending(new Field("time_load"));
                 return sd;
             })
-            .From(pageNumber)
+            .From(numberData)
             .Size(20)
             );
 
@@ -247,9 +247,10 @@ namespace CrawDataFromWebSales
             .Index("data-index")
             .From(0)
             .Query(q => q
-                .Match(m => m.Field("status").Query("2")))
+                .MatchAll())
             .Sort((sd) =>
             {
+                sd.Ascending(new Field("status"));
                 sd.Ascending(new Field("time_load"));
                 return sd;
             })
@@ -271,7 +272,7 @@ namespace CrawDataFromWebSales
             }
         }
 
-        private async void getData(Data data)
+        private void getData(Data data)
         {
             IStore store = (new StoreFactory()).GetStore(data.url);
             var _data = store.getData(data).Result;
