@@ -79,7 +79,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CrawData.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="DatagirdViewAction.cs" />
     <Compile Include="Form1.cs">
