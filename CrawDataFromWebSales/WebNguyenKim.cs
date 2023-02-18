@@ -4,6 +4,7 @@ using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -99,6 +100,11 @@ namespace CrawDataFromWebSales
                         AutoDetectEncoding = false,
                         OverrideEncoding = Encoding.UTF8
                     };
+                    htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
+                    {
+                        webReq.Timeout = 10000; // number of milliseconds
+                        return true;
+                    };
 
                     HtmlDocument doc = new HtmlDocument
                     {
@@ -117,15 +123,15 @@ namespace CrawDataFromWebSales
 
                     data.status = 1;
                     data.name = name;
-                    data.price = price.Trim();
+                    data.price = Convert.ToDouble(price.Trim());
                     data.description = description;
 
                 }
-                catch (Exception e)
+                catch
                 {
                     data.status = 2;
+                    data.time_load = DateTime.Now;
                     tokenSource.Cancel();
-                    MessageBox.Show(e.Message);
                 }
             };
             Task crawlTask = new Task(get_Data, tokenSource.Token);
