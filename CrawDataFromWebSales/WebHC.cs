@@ -89,7 +89,7 @@ namespace CrawDataFromWebSales
             return host;
         }
 
-        async Task<Data> getData(Data data)
+        async Task<Data> IStore.getData(Data data)
 
         {
             var tokenSource = new CancellationTokenSource();
