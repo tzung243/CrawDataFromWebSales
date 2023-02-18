@@ -1,12 +1,9 @@
-﻿using Elasticsearch.Net.Specification.MachineLearningApi;
-using Nest;
+﻿using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 using Timer = System.Timers.Timer;
 
 
@@ -14,7 +11,7 @@ namespace CrawDataFromWebSales
 {
     public partial class Form1 : Form
     {
-        ElasticClient client;
+        EServicce eServicce;
         int pageNumber = 1;
         private bool isLoadsLinks;
         public Form1()
@@ -24,9 +21,8 @@ namespace CrawDataFromWebSales
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            client = new ElasticClient("craw_data:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvOjQ0MyQ3OGU2Y2Q2OWIwYWQ0NTczYWMwNDNkYThmNDdlZTE0ZiQ4YTM0NTJlMDBlYzU0NzE1YTA1MmQ1MDdjMWRlMDk4NA==",
-              new Elasticsearch.Net.ApiKeyAuthenticationCredentials("T3R1c1NJWUJKdUNELWYxb2lhTUM6aWJ5TjNDcmVTYjJpT1BKTFlvUTlFZw=="));
 
+            eServicce = new EServicce();
             isLoadsLinks = false;
             DatagirdViewAction.createView(dataGridView);
             await Load_DataGridView();
@@ -36,8 +32,7 @@ namespace CrawDataFromWebSales
 
         private async Task Load_DataGridView()
         {
-            CountRequest countReq = new CountRequest("data-index");
-            long counter = (await client.CountAsync(countReq)).Count;
+            long counter = await eServicce.countIndex("data-index");
             int pageTail;
             if (counter % 20 == 0)
             {
@@ -82,7 +77,7 @@ namespace CrawDataFromWebSales
 
         private async void button_craw_Click(object sender, EventArgs e)
         {
-            isLoadsLinks= true;
+            isLoadsLinks = true;
             button_craw.Enabled = false;
             string url = textbox_url.Text;
             await getLinks(url);
@@ -100,60 +95,31 @@ namespace CrawDataFromWebSales
                 {
                     result = store.getLinkProducts(url);
                     domain = store.getDomain();
-                    
+
                 }
-                Task task = addLinkToES(result,domain);
+                Task task = addLinkToES(result, domain);
             });
 
             isLoadsLinks = false;
-            
+
         }
 
-        private async Task addLinkToES(List<string> list_url, string _domain)
+        private async Task addLinkToES(List<string> list_url, string domain)
         {
             if (list_url.Count == 0) { return; }
-            foreach (var item in list_url)
-            {
-                Data data = new Data()
-                {
-                    url = item,
-                    status = 0,
-                    time_create = DateTime.Now,
-                    domain = _domain,
-                    time_load = DateTime.Now
-                };
 
-                var response = client.Index(data, request => request.Index("data-index"));
-            }
+            var listData = list_url.Select(u => new Data(u, domain));
+
+            await eServicce.indexDatasAsync(listData);
             await Load_DataGridView();
         }
 
         private async Task<List<Data>> loadPageNumber(int numberPage)
         {
-
-            CountRequest countReq = new CountRequest("data-index");
-
             int numberData = (pageNumber - 1) * 20;
-            long counter = client.Count(countReq).Count;
+            long counter = await eServicce.countIndex("data-index");
 
-
-            Nest.ISearchResponse<Data> response;
-
-            response = await client.SearchAsync<Data>(n => n
-            .Index("data-index")
-            .Query(q => q
-                .MatchAll()
-                )
-            .Sort((sd) =>
-            {
-                sd.Descending(new Field("time_load"));
-                return sd;
-            })
-            .From(numberData)
-            .Size(20)
-            );
-
-
+            var response = await eServicce.SearchDataFrom(numberData);
 
             if (!response.IsValid)
             {
@@ -283,12 +249,12 @@ namespace CrawDataFromWebSales
         {
             var response = client.Update<Data, object>(data._id, (ud) =>
             {
-               
+
                 ud.Doc(new Data
                 {
                     url = data.url,
                     name = data.name,
-                    price= data.price,
+                    price = data.price,
                     description = data.description,
                     time_load = data.time_load,
                     status = data.status

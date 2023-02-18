@@ -107,12 +107,14 @@ namespace CrawDataFromWebSales
 
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
 
-                    string price = documentNode.SelectSingleNode("//div[@class = 'pdetail-price-box']").InnerText;
+                    string price = documentNode.SelectSingleNode("//span[@class = 'price-new']").InnerText;
                     price = Regex.Replace(price, "\\D", "");
-                    data.price = UInt32.Parse(price);
+                    double curPrice;
+                    double.TryParse(price, out curPrice);
+                    data.price = curPrice;
 
                     var desNodes = documentNode.SelectNodes("//h3[@dir='ltr'] | //p[@dir='ltr']")
-                                                    .Select(n => n.InnerText);
+                                                .Select(n => n.InnerText);
                     var des = new StringBuilder();
                     foreach (var node in desNodes)
                     {

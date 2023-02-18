@@ -98,7 +98,7 @@ namespace CrawDataFromWebSales
             return host;
         }
 
-        async Task<Data> getData(Data data)
+        public async Task<Data> getData(Data data)
         {
             var tokenSource = new CancellationTokenSource();
             Action getData = () =>
@@ -117,7 +117,9 @@ namespace CrawDataFromWebSales
 
                     string price = documentNode.SelectSingleNode("//div[@class = 'price_block']").FirstChild.InnerText;
                     price = Regex.Replace(price, "\\D", "");
-                    data.price = UInt32.Parse(price);
+                    double curPrice;
+                    double.TryParse(price, out curPrice);
+                    data.price = curPrice;
 
                     var desNodes = documentNode.SelectNodes("//div[@class = 'des_pro_item']")[1]
                                                     .ChildNodes.Select(n => n.InnerText);
