@@ -4,6 +4,7 @@ using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -103,13 +104,18 @@ namespace CrawDataFromWebSales
                         AutoDetectEncoding = false,
                         OverrideEncoding = Encoding.UTF8
                     };
+                    htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
+                    {
+                        webReq.Timeout = 10000; // number of milliseconds
+                        return true;
+                    };
                     var documentNode = htmlWeb.Load(data.url).DocumentNode;
 
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
 
-                    string price = documentNode.SelectSingleNode("//div[@class = 'pdetail-price-box']").InnerText;
+                    string price = documentNode.SelectSingleNode("//div[@class = 'pdetail-price-box']/h3").InnerText;
                     price = Regex.Replace(price, "\\D", "");
-                    data.price = UInt32.Parse(price);
+                    data.price = price.Trim();
 
                     data.description = documentNode.SelectSingleNode("//div[@class = 'pdetail-desc']/p").InnerText;
 
@@ -119,6 +125,7 @@ namespace CrawDataFromWebSales
                 catch (Exception)
                 {
                     data.status = 2;
+                    data.time_load = DateTime.Now;
                     tokenSource.Cancel();
                 }
             };

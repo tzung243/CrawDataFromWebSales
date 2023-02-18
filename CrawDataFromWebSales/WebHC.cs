@@ -1,13 +1,17 @@
-﻿using HtmlAgilityPack;
+﻿using Fizzler.Systems.HtmlAgilityPack;
+using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace CrawDataFromWebSales
 {
@@ -89,7 +93,7 @@ namespace CrawDataFromWebSales
             return host;
         }
 
-        async Task<Data> getData(Data data)
+        async Task<Data> IStore.getData(Data data)
 
         {
             var tokenSource = new CancellationTokenSource();
@@ -103,29 +107,27 @@ namespace CrawDataFromWebSales
                         AutoDetectEncoding = false,
                         OverrideEncoding = Encoding.UTF8
                     };
+                    htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
+                    {
+                        webReq.Timeout = 60000; // number of milliseconds
+                        return true;
+                    };
                     var documentNode = htmlWeb.Load(data.url).DocumentNode;
 
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
+                    string price = documentNode.QuerySelector("span.price-new").InnerText;
+                    data.price = Regex.Replace(price, "\\D", "").Trim();
 
-                    string price = documentNode.SelectSingleNode("//div[@class = 'pdetail-price-box']").InnerText;
-                    price = Regex.Replace(price, "\\D", "");
-                    data.price = UInt32.Parse(price);
-
-                    var desNodes = documentNode.SelectNodes("//h3[@dir='ltr'] | //p[@dir='ltr']")
-                                                    .Select(n => n.InnerText);
-                    var des = new StringBuilder();
-                    foreach (var node in desNodes)
-                    {
-                        des.Append(node);
-                    }
-                    data.description = des.ToString();
+                    var desNodes = documentNode.QuerySelector("div.tab-content").InnerText;
+                    data.description = desNodes;
 
                     data.status = 1;
                     data.time_load = DateTime.Now;
                 }
-                catch (Exception)
+                catch
                 {
                     data.status = 2;
+                    data.time_load = DateTime.Now;
                     tokenSource.Cancel();
                 }
             };
@@ -136,5 +138,6 @@ namespace CrawDataFromWebSales
 
             return data;
         }
+
     }
 }

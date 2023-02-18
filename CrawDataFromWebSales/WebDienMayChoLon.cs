@@ -1,9 +1,11 @@
-﻿using HtmlAgilityPack;
+﻿using Fizzler.Systems.HtmlAgilityPack;
+using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -98,7 +100,7 @@ namespace CrawDataFromWebSales
             return host;
         }
 
-        async Task<Data> getData(Data data)
+        async Task<Data> IStore.getData(Data data)
         {
             var tokenSource = new CancellationTokenSource();
             Action getData = () =>
@@ -111,14 +113,18 @@ namespace CrawDataFromWebSales
                         AutoDetectEncoding = false,
                         OverrideEncoding = Encoding.UTF8
                     };
+
+                    htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
+                    {
+                        webReq.Timeout = 10000; // number of milliseconds
+                        return true;
+                    };
                     var documentNode = htmlWeb.Load(data.url).DocumentNode;
 
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
-
-                    string price = documentNode.SelectSingleNode("//div[@class = 'price_block']").FirstChild.InnerText;
+                    string price = documentNode.QuerySelector("span.price-pro").InnerText;
                     price = Regex.Replace(price, "\\D", "");
-                    data.price = UInt32.Parse(price);
-
+                    data.price = price.Trim();
                     var desNodes = documentNode.SelectNodes("//div[@class = 'des_pro_item']")[1]
                                                     .ChildNodes.Select(n => n.InnerText);
                     var des = new StringBuilder();
@@ -131,9 +137,10 @@ namespace CrawDataFromWebSales
                     data.status = 1;
                     data.time_load = DateTime.Now;
                 }
-                catch (Exception)
+                catch
                 {
                     data.status = 2;
+                    data.time_load = DateTime.Now;
                     tokenSource.Cancel();
                 }
             };
