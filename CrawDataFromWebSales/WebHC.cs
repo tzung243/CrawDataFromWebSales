@@ -1,8 +1,11 @@
-﻿using OpenQA.Selenium;
+﻿using HtmlAgilityPack;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -86,10 +89,52 @@ namespace CrawDataFromWebSales
             return host;
         }
 
-        public async Task<Data> getData(Data data)
-        {
-            throw new NotImplementedException();
-        }
+        async Task<Data> getData(Data data)
 
+        {
+            var tokenSource = new CancellationTokenSource();
+            Action getData = () =>
+            {
+
+                try
+                {
+                    HtmlWeb htmlWeb = new HtmlWeb()
+                    {
+                        AutoDetectEncoding = false,
+                        OverrideEncoding = Encoding.UTF8
+                    };
+                    var documentNode = htmlWeb.Load(data.url).DocumentNode;
+
+                    data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
+
+                    string price = documentNode.SelectSingleNode("//div[@class = 'pdetail-price-box']").InnerText;
+                    price = Regex.Replace(price, "\\D", "");
+                    data.price = UInt32.Parse(price);
+
+                    var desNodes = documentNode.SelectNodes("//h3[@dir='ltr'] | //p[@dir='ltr']")
+                                                    .Select(n => n.InnerText);
+                    var des = new StringBuilder();
+                    foreach (var node in desNodes)
+                    {
+                        des.Append(node);
+                    }
+                    data.description = des.ToString();
+
+                    data.status = 1;
+                    data.time_load = DateTime.Now;
+                }
+                catch (Exception)
+                {
+                    data.status = 2;
+                    tokenSource.Cancel();
+                }
+            };
+
+            Task crawlTaks = new Task(getData, tokenSource.Token);
+            crawlTaks.Start();
+            await crawlTaks;
+
+            return data;
+        }
     }
 }

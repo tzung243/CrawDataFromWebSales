@@ -1,13 +1,13 @@
-﻿using Nest;
+﻿using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CrawDataFromWebSales
 {
@@ -58,7 +58,7 @@ namespace CrawDataFromWebSales
             driver.Quit();
 
             return hrefTags;
-            
+
         }
 
         private List<string> getLinkProducts(WebDriver driver)
@@ -92,7 +92,42 @@ namespace CrawDataFromWebSales
 
         public async Task<Data> getData(Data data)
         {
-            throw new NotImplementedException();
+            var tokenSource = new CancellationTokenSource();
+            Action getData = () =>
+            {
+
+                try
+                {
+                    HtmlWeb htmlWeb = new HtmlWeb()
+                    {
+                        AutoDetectEncoding = false,
+                        OverrideEncoding = Encoding.UTF8
+                    };
+                    var documentNode = htmlWeb.Load(data.url).DocumentNode;
+
+                    data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
+
+                    string price = documentNode.SelectSingleNode("//div[@class = 'pdetail-price-box']").InnerText;
+                    price = Regex.Replace(price, "\\D", "");
+                    data.price = UInt32.Parse(price);
+
+                    data.description = documentNode.SelectSingleNode("//div[@class = 'pdetail-desc']/p").InnerText;
+
+                    data.status = 1;
+                    data.time_load = DateTime.Now;
+                }
+                catch (Exception)
+                {
+                    data.status = 2;
+                    tokenSource.Cancel();
+                }
+            };
+
+            Task crawlTaks = new Task(getData, tokenSource.Token);
+            crawlTaks.Start();
+            await crawlTaks;
+
+            return data;
         }
 
     }
