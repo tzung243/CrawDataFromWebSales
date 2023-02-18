@@ -6,6 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
+using HtmlAgilityPack;
+using System.Text;
+using System.Threading.Tasks;
+using Fizzler.Systems.HtmlAgilityPack;
+using System.Windows.Forms;
 
 namespace CrawDataFromWebSales
 {
@@ -85,9 +91,53 @@ namespace CrawDataFromWebSales
             return host;
         }
 
-        public async void getData(Data data)
+        public async Task<Data> getData(Data data)
         {
-            throw new NotImplementedException();
+            var tokenSource = new CancellationTokenSource();
+            Action get_Data = () =>
+            {
+                try
+                {
+                    HtmlWeb htmlWeb = new HtmlWeb()
+                    {
+                        AutoDetectEncoding = false,
+                        OverrideEncoding = Encoding.UTF8
+                    };
+
+                    HtmlDocument doc = new HtmlDocument
+                    {
+                        OptionUseIdAttribute = true
+                    };
+
+                    doc = htmlWeb.Load(data.url);
+
+                    string name = doc.DocumentNode.SelectSingleNode(".//div[@data-name]").Attributes["data-name"].Value;
+                    string price = doc.DocumentNode.QuerySelector("p.box-price-present").InnerText;
+                    price = price.Replace(".", "");
+                    price = price.Replace("&#x20AB;", "");
+
+                    var description = doc.DocumentNode.SelectSingleNode(".//div[@class='content-article']").InnerText;
+
+                    data.status = 1;
+                    data.name = name;
+                    data.price = price.Trim();
+                    data.description = description;
+
+                }
+                catch(Exception e)
+                {
+                    data.status = 2;
+                    tokenSource.Cancel();
+                    //MessageBox.Show(e.Message);
+                }
+            };
+            Task crawlTask = new Task(get_Data, tokenSource.Token);
+            crawlTask.Start();
+            await crawlTask;
+            data.time_load = DateTime.Now;
+            return data;
         }
+
+
     }
 }

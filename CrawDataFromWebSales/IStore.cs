@@ -1,6 +1,8 @@
 ﻿using OpenQA.Selenium.DevTools.V107.Database;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace CrawDataFromWebSales
 {
     public interface IStore
@@ -12,8 +14,7 @@ namespace CrawDataFromWebSales
         bool isStore(Uri url);
 
         string getDomain();
-
-        void getData(Data data);
+        Task<Data> getData(Data data);
 
     }
 }
