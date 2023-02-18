@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Fizzler.Systems.HtmlAgilityPack;
+using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System;
@@ -102,7 +103,7 @@ namespace CrawDataFromWebSales
                     };
                     htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
                     {
-                        webReq.Timeout = 10000; // number of milliseconds
+                        webReq.Timeout = 600000; // number of milliseconds
                         return true;
                     };
 
@@ -127,11 +128,12 @@ namespace CrawDataFromWebSales
                     data.description = description;
 
                 }
-                catch
+                catch(Exception e)
                 {
                     data.status = 2;
                     data.time_load = DateTime.Now;
                     tokenSource.Cancel();
+                    MessageBox.Show(e.Message);
                 }
             };
             Task crawlTask = new Task(get_Data, tokenSource.Token);

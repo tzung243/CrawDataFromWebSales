@@ -118,9 +118,16 @@ namespace CrawDataFromWebSales
 
                     htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
                     {
-                        webReq.Timeout = 10000; // number of milliseconds
+                        webReq.Timeout = 600000; // number of milliseconds
                         return true;
                     };
+
+                    HtmlDocument doc = new HtmlDocument
+                    {
+                        OptionUseIdAttribute = true
+                    };
+
+
                     var documentNode = htmlWeb.Load(data.url).DocumentNode;
 
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;

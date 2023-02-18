@@ -109,33 +109,30 @@ namespace CrawDataFromWebSales
                     };
                     htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
                     {
-                        webReq.Timeout = 60000; // number of milliseconds
+                        webReq.Timeout = 600000; // number of milliseconds
                         return true;
                     };
-                    var documentNode = htmlWeb.Load(data.url).DocumentNode;
+                    var documentNode = htmlWeb.Load(data.url);
 
-                    data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
-                    string price = documentNode.QuerySelector("span.price-new").InnerText;
-                    data.price = Regex.Replace(price, "\\D", "").Trim();
-
-
-                    string price = documentNode.SelectSingleNode("//span[@class = 'price-new']").InnerText;
+                    data.name = documentNode.DocumentNode.SelectSingleNode("//h1").InnerHtml;
+                    string price = documentNode.DocumentNode.SelectSingleNode("//span[@class = 'price-new']").InnerText;
                     price = Regex.Replace(price, "\\D", "");
                     double curPrice;
                     double.TryParse(price, out curPrice);
                     data.price = curPrice;
 
-                    var desNodes = documentNode.QuerySelector("div.tab-content").InnerText;
+                    var desNodes = documentNode.DocumentNode.QuerySelector("div.tab-content").InnerText;
                     data.description = desNodes;
 
                     data.status = 1;
                     data.time_load = DateTime.Now;
                 }
-                catch
+                catch(Exception e)
                 {
                     data.status = 2;
                     data.time_load = DateTime.Now;
                     tokenSource.Cancel();
+                    MessageBox.Show(e.Message);
                 }
             };
 
