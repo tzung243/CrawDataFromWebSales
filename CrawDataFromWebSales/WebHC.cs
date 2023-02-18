@@ -118,6 +118,13 @@ namespace CrawDataFromWebSales
                     string price = documentNode.QuerySelector("span.price-new").InnerText;
                     data.price = Regex.Replace(price, "\\D", "").Trim();
 
+
+                    string price = documentNode.SelectSingleNode("//span[@class = 'price-new']").InnerText;
+                    price = Regex.Replace(price, "\\D", "");
+                    double curPrice;
+                    double.TryParse(price, out curPrice);
+                    data.price = curPrice;
+
                     var desNodes = documentNode.QuerySelector("div.tab-content").InnerText;
                     data.description = desNodes;
 

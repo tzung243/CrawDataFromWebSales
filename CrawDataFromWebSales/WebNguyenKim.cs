@@ -1,8 +1,6 @@
-﻿using Fizzler.Systems.HtmlAgilityPack;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,9 +53,9 @@ namespace CrawDataFromWebSales
                     }
                 }
 
-            driver.Quit();
-            return hrefTags;
-        }
+                driver.Quit();
+                return hrefTags;
+            }
 
         }
         private List<string> getLinkProductsInPagination(WebDriver driver)
@@ -117,6 +115,7 @@ namespace CrawDataFromWebSales
 
                     string name = doc.DocumentNode.SelectSingleNode(".//h1[@class='product_info_name']").InnerText;
                     string price = doc.DocumentNode.QuerySelector("span.nk-price-final").InnerText;
+
                     price = price.Replace(".", "");
                     price = price.Replace("đ", "");
 

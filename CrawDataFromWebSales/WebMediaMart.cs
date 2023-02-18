@@ -115,7 +115,10 @@ namespace CrawDataFromWebSales
 
                     string price = documentNode.SelectSingleNode("//div[@class = 'pdetail-price-box']/h3").InnerText;
                     price = Regex.Replace(price, "\\D", "");
-                    data.price = price.Trim();
+
+                    double curPrice;
+                    double.TryParse(price, out curPrice);
+                    data.price = curPrice;
 
                     data.description = documentNode.SelectSingleNode("//div[@class = 'pdetail-desc']/p").InnerText;
 
