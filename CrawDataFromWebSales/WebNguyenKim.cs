@@ -1,9 +1,16 @@
-﻿using OpenQA.Selenium;
+﻿using Fizzler.Systems.HtmlAgilityPack;
+using HtmlAgilityPack;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace CrawDataFromWebSales
 {
@@ -82,9 +89,52 @@ namespace CrawDataFromWebSales
             return host;
         }
 
-        public void getData(Data data)
+        public async Task<Data> getData(Data data)
         {
-            throw new NotImplementedException();
+            var tokenSource = new CancellationTokenSource();
+            Action get_Data = () =>
+            {
+                try
+                {
+                    HtmlWeb htmlWeb = new HtmlWeb()
+                    {
+                        AutoDetectEncoding = false,
+                        OverrideEncoding = Encoding.UTF8
+                    };
+
+                    HtmlDocument doc = new HtmlDocument
+                    {
+                        OptionUseIdAttribute = true
+                    };
+
+                    doc = htmlWeb.Load(data.url);
+
+                    string name = doc.DocumentNode.SelectSingleNode(".//h1[@class='product_info_name']").InnerText;
+                    string price = doc.DocumentNode.QuerySelector("span.nk-price-final").InnerText;
+                    price = price.Replace(".", "");
+                    price = price.Replace("đ", "");
+
+                    string description = doc.DocumentNode.SelectSingleNode(".//div[@class='productInfo_description']").InnerText;
+
+                    data.status = 1;
+                    data.name = name;
+                    data.price = price.Trim();
+                    data.description = description;
+
+                }
+                catch (Exception e)
+                {
+                    data.status = 2;
+                    tokenSource.Cancel();
+                    MessageBox.Show(e.Message);
+                }
+            };
+            Task crawlTask = new Task(get_Data, tokenSource.Token);
+            crawlTask.Start();
+            await crawlTask;
+            data.time_load = DateTime.Now;
+            return data;
         }
+
     }
 }

@@ -119,7 +119,8 @@ namespace CrawDataFromWebSales
                     url = item,
                     status = 0,
                     time_create = DateTime.Now,
-                    domain = _domain
+                    domain = _domain,
+                    time_load = DateTime.Now
                 };
 
                 var response = client.Index(data, request => request.Index("data-index"));
@@ -145,10 +146,10 @@ namespace CrawDataFromWebSales
                 )
             .Sort((sd) =>
             {
-                sd.Descending(new Field("time_create"));
+                sd.Descending(new Field("time_load"));
                 return sd;
             })
-            .From(pageNumber)
+            .From(numberData)
             .Size(20)
             );
 
@@ -215,7 +216,7 @@ namespace CrawDataFromWebSales
 
         private void getData()
         {
-            var timer = new Timer(6000);
+            var timer = new Timer(5000);
             timer.Elapsed += async (s, e) =>
             {
 
@@ -249,10 +250,11 @@ namespace CrawDataFromWebSales
                 .MatchAll())
             .Sort((sd) =>
             {
-                sd.Ascending(new Field("time_create"));
+                sd.Ascending(new Field("status"));
+                sd.Ascending(new Field("time_load"));
                 return sd;
             })
-            .Size(30)
+            .Size(10)
             );
 
             if (!response.IsValid)
@@ -273,49 +275,27 @@ namespace CrawDataFromWebSales
         private void getData(Data data)
         {
             IStore store = (new StoreFactory()).GetStore(data.url);
-            store.getData(data);
-            updateData(data);
+            var _data = store.getData(data).Result;
+            updateData(_data);
         }
 
-        private async void updateData(Data data)
+        private void updateData(Data data)
         {
-            var price = getPriceByID(data);
-
-            var response = await client.UpdateAsync<Data, object>(data._id, (ud) =>
+            var response = client.Update<Data, object>(data._id, (ud) =>
             {
                
                 ud.Doc(new Data
                 {
                     url = data.url,
+                    name = data.name,
                     price= data.price,
-                    time_load = DateTime.Now,
+                    description = data.description,
+                    time_load = data.time_load,
                     status = data.status
                 }).Index("data-index");
                 return ud;
             });
         }
 
-        private async Task<string> getPriceByID(Data data)
-        {
-            var response = await client.SearchAsync<Data>(s => s
-            .Index("data-index")
-            .Query(q => q
-                .Match(
-                    matchSelector => matchSelector.Field("_id").Query(data._id)
-                    )
-                )
-            .SourceQueryString("Price")
-            );
-
-            if (!response.IsValid)
-            {
-                return null;
-
-            }
-            else
-            {
-                return response.Hits.ToString();
-            }
-        }
     }
 }
