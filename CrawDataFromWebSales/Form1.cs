@@ -38,7 +38,7 @@ namespace CrawDataFromWebSales
 
         private async Task Load_DataGridView()
         {
-            CountRequest countReq = new CountRequest("data-index");
+            CountRequest countReq = new CountRequest("test");
             long counter = (await client.CountAsync(countReq)).Count;
             int pageTail;
             if (counter % 20 == 0)
@@ -124,8 +124,8 @@ namespace CrawDataFromWebSales
                     time_load = DateTime.Now
                 };
 
-                var response = client.Index(data, request => request.Index("data-index"));
-                //var response = client.Index(data, request => request.Index("test"));
+                //var response = client.Index(data, request => request.Index("data-index"));
+                var response = client.Index(data, request => request.Index("test"));
             }
 
             await Load_DataGridView();
@@ -133,8 +133,7 @@ namespace CrawDataFromWebSales
 
         private async Task<List<Data>> loadPageNumber(int numberPage)
         {
-
-            CountRequest countReq = new CountRequest("data-index");
+            CountRequest countReq = new CountRequest("test");
 
             int numberData = (pageNumber - 1) * 20;
             long counter = client.Count(countReq).Count;
@@ -143,7 +142,7 @@ namespace CrawDataFromWebSales
             Nest.ISearchResponse<Data> response;
 
             response = await client.SearchAsync<Data>(n => n
-            .Index("data-index")
+            .Index("test")
             .Query(q => q
                 .MatchAll()
                 )
@@ -228,7 +227,7 @@ namespace CrawDataFromWebSales
         private async Task<List<Data>> getLinkCraw(ElasticClient client)
         {
             var response = await client.SearchAsync<Data>(n => n
-            .Index("data-index")
+            .Index("test")
             //.Index("test")
             .From(0)
             .Query(q => q
@@ -278,7 +277,7 @@ namespace CrawDataFromWebSales
                     description = data.description,
                     time_load = data.time_load,
                     status = data.status
-                }).Index("data-index");
+                }).Index("test");
                 //}).Index("test");
                 return ud;
             });

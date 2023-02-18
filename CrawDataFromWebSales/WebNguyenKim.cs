@@ -124,7 +124,7 @@ namespace CrawDataFromWebSales
 
                     data.status = 1;
                     data.name = name;
-                    data.price = price.Trim(); 
+                    data.price = Convert.ToDouble(price.Trim());
                     data.description = description;
 
                 }

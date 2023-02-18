@@ -124,7 +124,7 @@ namespace CrawDataFromWebSales
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
                     string price = documentNode.QuerySelector("span.price-pro").InnerText;
                     price = Regex.Replace(price, "\\D", "");
-                    data.price = price.Trim();
+                    data.price = Convert.ToDouble(price.Trim());
                     var desNodes = documentNode.SelectNodes("//div[@class = 'des_pro_item']")[1]
                                                     .ChildNodes.Select(n => n.InnerText);
                     var des = new StringBuilder();
