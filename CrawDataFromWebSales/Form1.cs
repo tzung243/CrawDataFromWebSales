@@ -213,8 +213,7 @@ namespace CrawDataFromWebSales
             var response = await client.SearchAsync<Data>(n => n
             .Index("test")
             .From(0)
-            .Query(q => q
-                .MatchAll())
+            .MatchAll()
             .Sort((sd) =>
             {
                 sd.Ascending(new Field("time_load"));

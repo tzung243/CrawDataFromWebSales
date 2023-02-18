@@ -128,12 +128,11 @@ namespace CrawDataFromWebSales
                     data.description = description;
 
                 }
-                catch(Exception e)
+                catch
                 {
                     data.status = 2;
                     data.time_load = DateTime.Now;
                     tokenSource.Cancel();
-                    MessageBox.Show(e.Message);
                 }
             };
             Task crawlTask = new Task(get_Data, tokenSource.Token);

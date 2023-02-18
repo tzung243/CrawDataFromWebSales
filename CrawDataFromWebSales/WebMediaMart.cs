@@ -125,7 +125,7 @@ namespace CrawDataFromWebSales
                     data.status = 1;
                     data.time_load = DateTime.Now;
                 }
-                catch (Exception)
+                catch
                 {
                     data.status = 2;
                     data.time_load = DateTime.Now;
