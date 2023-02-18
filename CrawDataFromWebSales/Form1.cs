@@ -17,6 +17,7 @@ namespace CrawDataFromWebSales
         ElasticClient client;
         int pageNumber = 1;
         private bool isLoadsLinks;
+        private bool isUpdate;
         public Form1()
         {
             InitializeComponent();
@@ -27,6 +28,7 @@ namespace CrawDataFromWebSales
             client = new ElasticClient("craw_data:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvOjQ0MyQ3OGU2Y2Q2OWIwYWQ0NTczYWMwNDNkYThmNDdlZTE0ZiQ4YTM0NTJlMDBlYzU0NzE1YTA1MmQ1MDdjMWRlMDk4NA==",
               new Elasticsearch.Net.ApiKeyAuthenticationCredentials("T3R1c1NJWUJKdUNELWYxb2lhTUM6aWJ5TjNDcmVTYjJpT1BKTFlvUTlFZw=="));
 
+            isUpdate = false;
             isLoadsLinks = false;
             DatagirdViewAction.createView(dataGridView);
             await Load_DataGridView();
@@ -36,7 +38,7 @@ namespace CrawDataFromWebSales
 
         private async Task Load_DataGridView()
         {
-            CountRequest countReq = new CountRequest("data-index");
+            CountRequest countReq = new CountRequest("test");
             long counter = (await client.CountAsync(countReq)).Count;
             int pageTail;
             if (counter % 20 == 0)
@@ -103,10 +105,9 @@ namespace CrawDataFromWebSales
                     
                 }
                 Task task = addLinkToES(result,domain);
+                isLoadsLinks = false;
             });
 
-            isLoadsLinks = false;
-            
         }
 
         private async Task addLinkToES(List<string> list_url, string _domain)
@@ -123,15 +124,16 @@ namespace CrawDataFromWebSales
                     time_load = DateTime.Now
                 };
 
-                var response = client.Index(data, request => request.Index("data-index"));
+                //var response = client.Index(data, request => request.Index("data-index"));
+                var response = client.Index(data, request => request.Index("test"));
             }
+
             await Load_DataGridView();
         }
 
         private async Task<List<Data>> loadPageNumber(int numberPage)
         {
-
-            CountRequest countReq = new CountRequest("data-index");
+            CountRequest countReq = new CountRequest("test");
 
             int numberData = (pageNumber - 1) * 20;
             long counter = client.Count(countReq).Count;
@@ -140,7 +142,7 @@ namespace CrawDataFromWebSales
             Nest.ISearchResponse<Data> response;
 
             response = await client.SearchAsync<Data>(n => n
-            .Index("data-index")
+            .Index("test")
             .Query(q => q
                 .MatchAll()
                 )
@@ -171,28 +173,6 @@ namespace CrawDataFromWebSales
             }
         }
 
-        private void addData(Data data)
-        {
-
-            DataGridViewRow row = new DataGridViewRow();
-            row.Cells[0].Value = data.url;
-            if (data.status == 1)
-            {
-                row.Cells[1].Value = "Thành công";
-                row.Cells[2].Value = $@"C:\demo\{data._id}.txt";
-            }
-            else if (data.status == 0)
-            {
-                row.Cells[1].Value = "Mới";
-            }
-            else if (data.status == 2)
-            {
-                row.Cells[1].Value = "Lỗi";
-
-            }
-            row.Cells[3].Value = data._id;
-            dataGridView.Rows.Add(row);
-        }
 
         private void button_next_Click(object sender, EventArgs e)
         {
@@ -214,13 +194,13 @@ namespace CrawDataFromWebSales
 
         }
 
-        private void getData()
+        private async void getData()
         {
             var timer = new Timer(5000);
             timer.Elapsed += async (s, e) =>
             {
 
-                if (!isLoadsLinks)
+                if (!isLoadsLinks && !isUpdate)
                 {
                     await getDataAsync();
                     Load_DataGridView();
@@ -230,6 +210,8 @@ namespace CrawDataFromWebSales
             timer.AutoReset = true;
             timer.Enabled = true;
             timer.Start();
+
+
         }
 
         private async Task getDataAsync()
@@ -239,18 +221,19 @@ namespace CrawDataFromWebSales
             {
                 ParallelLoopResult result = Parallel.ForEach(data, getData);
             }
+            isUpdate = false;   
         }
 
         private async Task<List<Data>> getLinkCraw(ElasticClient client)
         {
             var response = await client.SearchAsync<Data>(n => n
-            .Index("data-index")
+            .Index("test")
+            //.Index("test")
             .From(0)
             .Query(q => q
                 .MatchAll())
             .Sort((sd) =>
             {
-                sd.Ascending(new Field("status"));
                 sd.Ascending(new Field("time_load"));
                 return sd;
             })
@@ -272,9 +255,11 @@ namespace CrawDataFromWebSales
             }
         }
 
+
         private void getData(Data data)
         {
             IStore store = (new StoreFactory()).GetStore(data.url);
+            
             var _data = store.getData(data).Result;
             updateData(_data);
         }
@@ -292,7 +277,8 @@ namespace CrawDataFromWebSales
                     description = data.description,
                     time_load = data.time_load,
                     status = data.status
-                }).Index("data-index");
+                }).Index("test");
+                //}).Index("test");
                 return ud;
             });
         }
