@@ -1,4 +1,4 @@
-﻿using Fizzler.Systems.HtmlAgilityPack;
+using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -100,7 +100,9 @@ namespace CrawDataFromWebSales
             return host;
         }
 
-        async Task<Data> IStore.getData(Data data)
+
+        public async Task<Data> getData(Data data)
+
         {
             var tokenSource = new CancellationTokenSource();
             Action getData = () =>
@@ -116,15 +118,26 @@ namespace CrawDataFromWebSales
 
                     htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
                     {
-                        webReq.Timeout = 10000; // number of milliseconds
+                        webReq.Timeout = 600000; // number of milliseconds
                         return true;
                     };
+
+                    HtmlDocument doc = new HtmlDocument
+                    {
+                        OptionUseIdAttribute = true
+                    };
+
+
                     var documentNode = htmlWeb.Load(data.url).DocumentNode;
 
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
                     string price = documentNode.QuerySelector("span.price-pro").InnerText;
                     price = Regex.Replace(price, "\\D", "");
-                    data.price = Convert.ToDouble(price.Trim());
+
+                    double curPrice;
+                    double.TryParse(price, out curPrice);
+                    data.price = curPrice;
+
                     var desNodes = documentNode.SelectNodes("//div[@class = 'des_pro_item']")[1]
                                                     .ChildNodes.Select(n => n.InnerText);
                     var des = new StringBuilder();

@@ -106,7 +106,7 @@ namespace CrawDataFromWebSales
                     };
                     htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
                     {
-                        webReq.Timeout = 10000; // number of milliseconds
+                        webReq.Timeout = 600000; // number of milliseconds
                         return true;
                     };
                     var documentNode = htmlWeb.Load(data.url).DocumentNode;
@@ -115,7 +115,10 @@ namespace CrawDataFromWebSales
 
                     string price = documentNode.SelectSingleNode("//div[@class = 'pdetail-price-box']/h3").InnerText;
                     price = Regex.Replace(price, "\\D", "");
-                    data.price = price.Trim();
+
+                    double curPrice;
+                    double.TryParse(price, out curPrice);
+                    data.price = curPrice;
 
                     data.description = documentNode.SelectSingleNode("//div[@class = 'pdetail-desc']/p").InnerText;
 
