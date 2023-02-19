@@ -134,8 +134,7 @@ namespace CrawDataFromWebSales
                     data.description = description;
 
                 }
-                catch(Exception)
-                {
+                catch { 
                     data.status = 2;
                     data.time_load = DateTime.Now;
                     tokenSource.Cancel();
