@@ -69,45 +69,114 @@ namespace CrawDataFromWebSales
         }
 
 
-        public async Task<List<Data>> getLinks(string nameProduct, int status, string domain, double priceFrom, double priceTo,
-                                        DateTime updatedFrom, DateTime updatedTo, DateTime createdFrom, DateTime createdTo, bool isBelonged)
+        public async Task<List<Data>> getLinksByName(string nameProduct)
         {
             var resp = await Client.SearchAsync<Data>(s => s.From(0)
                                                        .Size(10)
                                                        .Index("test")
-                                                       .Query(q => q.Bool(b => b.Must(m => m.Match(ma => ma.Field(f => f.name).Query(nameProduct))
-                                                                                            && m.Term(t => t.domain, domain)
-                                                                                            && m.Range(r => r.Field(f => f.price)
-                                                                                                              .GreaterThanOrEquals(priceFrom)
-                                                                                                              .LessThanOrEquals(priceTo)))
-                                                                                .Filter(f => f.Term(t => t.status, status))
-                                                                                .Filter(f => f.DateRange(d => d.Field(fie => fie.time_update)
-                                                                                                                .GreaterThanOrEquals(updatedFrom.Date)
-                                                                                                                .LessThanOrEquals(updatedTo.AddDays(1).AddSeconds(-1))))
-                                                                                .Filter(f => f.DateRange(d => d.Field(fie => fie.time_create)
-                                                                                                                .GreaterThanOrEquals(createdFrom.Date)
-                                                                                                                .LessThanOrEquals(createdTo.AddDays(1).AddSeconds(-1))))
-                                                                                .Filter(f => f.Term(t => t.is_belonged, isBelonged))
-                                                                           )));
+                                                       .Query(q => q.Match(m => m.Field(f => f.name).Query(nameProduct))));
             return resp.Documents.ToList();
         }
 
-        public async Task<List<Product>> getProducts(string name, double priceFrom, double priceTo, DateTime createdFrom, DateTime createdTo, int totalLinksFrom, int totalLinksTo)
+        public async Task<List<Data>> getLinksByStatus(int status)
+        {
+            var resp = await Client.SearchAsync<Data>(s => s.From(0)
+                                                            .Size(10)
+                                                            .Index("test")
+                                                            .Query(q => q.Bool(b => b.Filter(f => f.Term(t => t.status, status)))));
+
+            return resp.Documents.ToList();
+        }
+        public async Task<List<Data>> getLinksByDomain(string domain)
+        {
+            var resp = await Client.SearchAsync<Data>(s => s.From(0)
+                                                            .Size(10)
+            .Index("test")
+                                                            .Query(q => q.Bool(b => b.Filter(f => f.Term(t => t.domain, domain)))));
+
+            return resp.Documents.ToList();
+        }
+        public async Task<List<Data>> getLinksByPrice(double from, double to)
+        {
+            var resp = await Client.SearchAsync<Data>(s => s.From(0)
+                                                            .Size(10)
+                                                            .Index("test")
+                                                            .Query(q => q.Range(r => r.Field(f => f.price)
+                                                                                        .GreaterThanOrEquals(from)
+                                                                                        .LessThanOrEquals(to))));
+
+            return resp.Documents.ToList();
+        }
+        public async Task<List<Data>> getLinksByUpdatedTime(DateTime from, DateTime to)
+        {
+            var resp = await Client.SearchAsync<Data>(s => s.From(0)
+                                                            .Size(10)
+                                                            .Index("test")
+                                                            .Query(q => q.DateRange(r => r.Field(f => f.time_update)
+                                                                                        .GreaterThanOrEquals(from)
+                                                                                        .LessThanOrEquals(to))));
+
+            return resp.Documents.ToList();
+        }
+        public async Task<List<Data>> getLinksByCreatedTime(DateTime from, DateTime to)
+        {
+            var resp = await Client.SearchAsync<Data>(s => s.From(0)
+                                                            .Size(10)
+                                                            .Index("test")
+                                                            .Query(q => q.DateRange(r => r.Field(f => f.time_create)
+                                                                                        .GreaterThanOrEquals(from)
+                                                                                        .LessThanOrEquals(to))));
+            return resp.Documents.ToList();
+        }
+
+        public async Task<List<Data>> getLinksByBelonged(bool isBelonged)
+        {
+            var resp = await Client.SearchAsync<Data>(s => s.From(0)
+                                                            .Size(10)
+                                                            .Index("test")
+                                                            .Query(q => q.Bool(b => b.Filter(f => f.Term(t => t.is_belonged, isBelonged)))));
+            return resp.Documents.ToList();
+        }
+
+        public async Task<Product> getProductByName(string name)
         {
             var resp = await Client.SearchAsync<Product>(s => s.From(0)
                                                        .Size(10)
                                                        .Index("product")
-                                                       .Query(q => q.Bool(b => b.Must(m => m.Match(ma => ma.Field(f => f.Name).Query(name))
-                                                                                            && m.Range(r => r.Field(f => f.Price)
-                                                                                                              .GreaterThanOrEquals(priceFrom)
-                                                                                                              .LessThanOrEquals(priceTo))
-                                                                                            && m.Range(r => r.Field(fie => fie.TotalLinks)
-                                                                                                             .GreaterThanOrEquals(totalLinksFrom)
-                                                                                                             .LessThanOrEquals(totalLinksTo)))
-                                                                                .Filter(f => f.DateRange(d => d.Field(fie => fie.Created)
-                                                                                                                .GreaterThanOrEquals(createdFrom.Date)
-                                                                                                                .LessThanOrEquals(createdTo.AddDays(1).AddSeconds(-1))))
-                                                                           )));
+                                                       .Query(q => q.Match(m => m.Field(f => f.Name).Query(name))));
+            return resp.Documents.First();
+        }
+
+        public async Task<List<Product>> getProductsByPrice(double from, double to)
+        {
+            var resp = await Client.SearchAsync<Product>(s => s.From(0)
+                                                      .Size(10)
+                                                      .Index("test")
+                                                      .Query(q => q.Range(r => r.Field(f => f.Price)
+                                                                                        .GreaterThanOrEquals(from)
+                                                                                        .LessThanOrEquals(to))));
+            return resp.Documents.ToList();
+        }
+
+        public async Task<List<Product>> getProductsByCreatedTime(DateTime from, DateTime to)
+        {
+            var resp = await Client.SearchAsync<Product>(s => s.From(0)
+                                                            .Size(10)
+                                                            .Index("test")
+                                                            .Query(q => q.DateRange(r => r.Field(f => f.Created)
+                                                                                        .GreaterThanOrEquals(from)
+                                                                                        .LessThanOrEquals(to))));
+            return resp.Documents.ToList();
+        }
+
+        public async Task<List<Product>> getProductsByTotalLinks(int from, int to)
+        {
+            var resp = await Client.SearchAsync<Product>(s => s.From(0)
+                                                            .Size(10)
+                                                            .Index("test")
+                                                            .Query(q => q.Range(r => r.Field(f => f.TotalLinks)
+                                                                                        .GreaterThanOrEquals(from)
+                                                                                        .LessThanOrEquals(to))));
             return resp.Documents.ToList();
         }
 
