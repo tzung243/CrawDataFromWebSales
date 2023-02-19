@@ -21,7 +21,8 @@ namespace CrawDataFromWebSales
         public int status { get; set; }
 
 
-
+        public int isBelonged { get; set; }
+        public string producId { get; set; }
 
         /*
 

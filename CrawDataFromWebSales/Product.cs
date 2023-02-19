@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace CrawDataFromWebSales
 {
@@ -14,6 +13,6 @@ namespace CrawDataFromWebSales
         public int Status { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastUpdated { get; set; }
-        public List<string> Links { get; set; }
+        public int TotalLinks { get; set; }
     }
 }

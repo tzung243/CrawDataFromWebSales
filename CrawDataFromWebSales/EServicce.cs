@@ -1,5 +1,7 @@
 ﻿using Nest;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CrawDataFromWebSales
@@ -64,6 +66,50 @@ namespace CrawDataFromWebSales
                 return ud;
             });
         }
+
+
+        public async Task<List<Data>> getLinks(string nameProduct, int status, string domain, double priceFrom, double priceTo,
+                                        DateTime updatedFrom, DateTime updatedTo, DateTime createdFrom, DateTime createdTo, bool isBelonged)
+        {
+            var resp = await Client.SearchAsync<Data>(s => s.From(0)
+                                                       .Size(10)
+                                                       .Index("test")
+                                                       .Query(q => q.Bool(b => b.Must(m => m.Term(t => t.name, nameProduct)
+                                                                                            && m.Term(t => t.domain, domain)
+                                                                                            && m.Range(r => r.Field(f => f.price)
+                                                                                                              .GreaterThanOrEquals(priceFrom)
+                                                                                                              .LessThanOrEquals(priceTo)))
+                                                                                .Filter(f => f.Term(t => t.status, status))
+                                                                                .Filter(f => f.DateRange(d => d.Field(fie => fie.time_update)
+                                                                                                                .GreaterThanOrEquals(updatedFrom.Date)
+                                                                                                                .LessThanOrEquals(updatedTo.AddDays(1).AddSeconds(-1))))
+                                                                                .Filter(f => f.DateRange(d => d.Field(fie => fie.time_create)
+                                                                                                                .GreaterThanOrEquals(createdFrom.Date)
+                                                                                                                .LessThanOrEquals(createdTo.AddDays(1).AddSeconds(-1))))
+                                                                                .Filter(f => f.Term(t => t.isBelonged, isBelonged))
+                                                                           )));
+            return resp.Documents.ToList();
+        }
+
+        public async Task<List<Product>> getProducts(string name, double priceFrom, double priceTo, DateTime createdFrom, DateTime createdTo, int totalLinksFrom, int totalLinksTo)
+        {
+            var resp = await Client.SearchAsync<Product>(s => s.From(0)
+                                                       .Size(10)
+                                                       .Index("product")
+                                                       .Query(q => q.Bool(b => b.Must(m => m.Term(t => t.Name, name)
+                                                                                            && m.Range(r => r.Field(f => f.Price)
+                                                                                                              .GreaterThanOrEquals(priceFrom)
+                                                                                                              .LessThanOrEquals(priceTo))
+                                                                                            && m.Range(r => r.Field(fie => fie.TotalLinks)
+                                                                                                             .GreaterThanOrEquals(totalLinksFrom)
+                                                                                                             .LessThanOrEquals(totalLinksTo)))
+                                                                                .Filter(f => f.DateRange(d => d.Field(fie => fie.Created)
+                                                                                                                .GreaterThanOrEquals(createdFrom.Date)
+                                                                                                                .LessThanOrEquals(createdTo.AddDays(1).AddSeconds(-1))))
+                                                                           )));
+            return resp.Documents.ToList();
+        }
+
 
     }
 }
