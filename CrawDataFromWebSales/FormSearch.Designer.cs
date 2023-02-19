@@ -51,28 +51,28 @@
             this.products});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1478, 42);
+            this.menuStrip1.Size = new System.Drawing.Size(1478, 40);
             this.menuStrip1.TabIndex = 12;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // linksProduct
             // 
             this.linksProduct.Name = "linksProduct";
-            this.linksProduct.Size = new System.Drawing.Size(99, 38);
+            this.linksProduct.Size = new System.Drawing.Size(99, 36);
             this.linksProduct.Text = "Home";
             this.linksProduct.Click += new System.EventHandler(this.linksProduct_Click);
             // 
             // statisLinksProduct
             // 
             this.statisLinksProduct.Name = "statisLinksProduct";
-            this.statisLinksProduct.Size = new System.Drawing.Size(90, 38);
+            this.statisLinksProduct.Size = new System.Drawing.Size(90, 36);
             this.statisLinksProduct.Text = "Statis";
             this.statisLinksProduct.Click += new System.EventHandler(this.statisLinksProduct_Click);
             // 
             // products
             // 
             this.products.Name = "products";
-            this.products.Size = new System.Drawing.Size(126, 38);
+            this.products.Size = new System.Drawing.Size(126, 36);
             this.products.Text = "Products";
             this.products.Click += new System.EventHandler(this.products_Click);
             // 
@@ -95,7 +95,6 @@
             // 
             // comboBoxSearch
             // 
-            this.comboBoxSearch.DisplayMember = "1";
             this.comboBoxSearch.FormattingEnabled = true;
             this.comboBoxSearch.Items.AddRange(new object[] {
             "Ten san pham",
@@ -108,6 +107,7 @@
             this.comboBoxSearch.Name = "comboBoxSearch";
             this.comboBoxSearch.Size = new System.Drawing.Size(186, 33);
             this.comboBoxSearch.TabIndex = 15;
+            this.comboBoxSearch.Text = "Ten san pham";
             // 
             // dataGridView1
             // 

@@ -8,7 +8,7 @@ namespace CrawDataFromWebSales
 {
     public class EServicce
     {
-        private ElasticClient Client { get; }
+        public ElasticClient Client { get; }
 
         public EServicce()
         {
@@ -26,14 +26,14 @@ namespace CrawDataFromWebSales
 
         public async Task indexDatasAsync(IEnumerable<Data> list)
         {
-            var response = await Client.IndexManyAsync(list, "data-index");
+            var response = await Client.IndexManyAsync(list, "test");
 
         }
 
         public async Task<ISearchResponse<Data>> SearchDataFrom(int from)
         {
             var response = await Client.SearchAsync<Data>(s => s
-                                        .Index("data-index")
+                                        .Index("test")
                                         .Query(q => q
                                             .MatchAll()
                                             )
