@@ -21,7 +21,6 @@ namespace CrawDataFromWebSales
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-
             eServicce = new EServicce();
             isLoadsLinks = false;
             DatagirdViewAction.createView(dataGridView);
@@ -244,5 +243,21 @@ namespace CrawDataFromWebSales
             eServicce.updateData(_data);
         }
 
+        private void seachLinksProduct_Click(object sender, EventArgs e)
+        {
+            FormSearch seach = new FormSearch();
+            FormsControl.switchMainForm(this,seach);
+        }
+
+        private void products_Click(object sender, EventArgs e)
+        {
+            FormProducts products = new FormProducts();
+            FormsControl.switchMainForm(this,products);
+        }
+
+        private void statisLinksProduct_Click(object sender, EventArgs e)
+        {
+            //TODO
+        }
     }
 }
