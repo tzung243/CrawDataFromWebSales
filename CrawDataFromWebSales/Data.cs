@@ -20,9 +20,8 @@ namespace CrawDataFromWebSales
         //status 0: Moi 1: Thanh cong 2: Loi
         public int status { get; set; }
 
-
-        public int isBelonged { get; set; }
-        public string producId { get; set; }
+        public int is_belonged { get; set; }
+        public string product_id { get; set; }
 
         /*
 
