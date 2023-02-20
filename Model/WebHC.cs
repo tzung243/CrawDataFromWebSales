@@ -126,12 +126,11 @@ namespace Model
                     data.status = 1;
                     data.time_load = DateTime.Now;
                 }
-                catch (Exception e)
+                catch
                 {
                     data.status = 2;
                     data.time_load = DateTime.Now;
                     tokenSource.Cancel();
-                    //MessageBox.Show(e.Message);
                 }
             };
 

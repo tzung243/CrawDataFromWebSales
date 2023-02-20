@@ -14,7 +14,6 @@ namespace CrawDataFromWebSales
     {
         EService eService;
         int pageNumber = 1;
-        private bool isLoadsLinks;
         public Form1()
         {
             InitializeComponent();
@@ -23,7 +22,6 @@ namespace CrawDataFromWebSales
         private async void Form1_Load(object sender, EventArgs e)
         {
             eService = new EService();
-            isLoadsLinks = false;
             DatagridViewAction.createView(dataGridView);
             await Load_DataGridView();
             //getData();
@@ -77,7 +75,6 @@ namespace CrawDataFromWebSales
 
         private async void button_craw_Click(object sender, EventArgs e)
         {
-            isLoadsLinks = true;
             button_craw.Enabled = false;
             string url = textbox_url.Text;
             await getLinks(url);
@@ -100,7 +97,6 @@ namespace CrawDataFromWebSales
                 Task task = addLinkToES(result, domain);
             });
 
-            isLoadsLinks = false;
 
         }
 
