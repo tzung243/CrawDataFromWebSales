@@ -21,13 +21,13 @@ namespace CrawDataFromWebSales
             dataGridView.Columns[0].Width = (int)(dataGridView.Width * 0.3);
 
             dataGridView.Columns.Add("state", "Trang thai");
-            dataGridView.Columns[1].Width = (int)(dataGridView.Width * 0.3);
+            dataGridView.Columns[1].Width = (int)(dataGridView.Width * 0.2);
 
-            dataGridView.Columns.Add("path", "Path");
-            dataGridView.Columns[2].Width = (int)(dataGridView.Width * 0.4);
+            dataGridView.Columns.Add("Name", "Name");
+            dataGridView.Columns[2].Width = (int)(dataGridView.Width * 0.3);
 
-            dataGridView.Columns.Add("id", String.Empty);
-            dataGridView.Columns[3].Visible = false;
+            dataGridView.Columns.Add("Price", "Gia");
+            dataGridView.Columns[3].Width = (int)(dataGridView.Width * 0.2);
 
 
         }
@@ -42,7 +42,6 @@ namespace CrawDataFromWebSales
             if (data.status == 1)
             {
                 row.Cells[1].Value = "Thành công";
-                row.Cells[2].Value = $@"C:\demo\{data._id}.txt";
             }
             else if (data.status == 0)
             {
@@ -53,7 +52,8 @@ namespace CrawDataFromWebSales
                 row.Cells[1].Value = "Lỗi";
 
             }
-            row.Cells[3].Value = data._id;
+            row.Cells[2].Value = data.name;
+            row.Cells[3].Value = data.price;
             dataGridView.Rows.Add(row);
 
         }

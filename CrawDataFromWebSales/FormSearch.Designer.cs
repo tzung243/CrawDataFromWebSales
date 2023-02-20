@@ -47,6 +47,7 @@
             this.tb_timeUpdate = new System.Windows.Forms.TextBox();
             this.tb_timeCreate = new System.Windows.Forms.TextBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.button_createPr = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -110,7 +111,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 82;
             this.dataGridView1.RowTemplate.Height = 33;
-            this.dataGridView1.Size = new System.Drawing.Size(1366, 720);
+            this.dataGridView1.Size = new System.Drawing.Size(1353, 636);
             this.dataGridView1.TabIndex = 16;
             // 
             // button_search
@@ -230,11 +231,22 @@
             this.checkBox1.Text = "Have product ?";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // button_createPr
+            // 
+            this.button_createPr.Location = new System.Drawing.Point(1199, 822);
+            this.button_createPr.Name = "button_createPr";
+            this.button_createPr.Size = new System.Drawing.Size(210, 41);
+            this.button_createPr.TabIndex = 30;
+            this.button_createPr.Text = "Tao san pham";
+            this.button_createPr.UseVisualStyleBackColor = true;
+            this.button_createPr.Hide();
+            // 
             // FormSearch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1478, 924);
+            this.Controls.Add(this.button_createPr);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.tb_timeCreate);
             this.Controls.Add(this.tb_timeUpdate);
@@ -283,5 +295,6 @@
         private System.Windows.Forms.TextBox tb_timeUpdate;
         private System.Windows.Forms.TextBox tb_timeCreate;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Button button_createPr;
     }
 }

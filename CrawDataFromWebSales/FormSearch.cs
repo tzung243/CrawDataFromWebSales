@@ -22,6 +22,7 @@ namespace CrawDataFromWebSales
         private void FormSearch_Load(object sender, EventArgs e)
         {
             eServicce = new EServicce();
+            DatagirdViewAction.createView(dataGridView1);
         }
         private void linksProduct_Click(object sender, EventArgs e)
         {
@@ -84,7 +85,7 @@ namespace CrawDataFromWebSales
             string dateCreateFromTo = tb_timeUpdate.Text;
             DateTime? createFrom = null;
             DateTime? createTo = null;
-            if (dateUpdateFromTo != string.Empty)
+            if (dateCreateFromTo != string.Empty)
             {
                 var dateCre = dateCreateFromTo.Split('-');
                 createFrom = DateTime.ParseExact(dateCre[0], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
@@ -92,12 +93,15 @@ namespace CrawDataFromWebSales
             }
 
             var item = eServicce.getLinksProduct(name, status, domain, priceFrom, priceTo, updateFrom, updateTo, createFrom, createTo, this.checkBox1.Checked);
-            var items = await eServicce.getLinksByName(name);
 
-            string text_search = textBox1.Text;
-           
+            DatagirdViewAction.setData(item,dataGridView1);
+
+            if(item.Count> 0)
+            {
+                button_createPr.Show();
+            }
         }
 
-
+       
     }
 }
