@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Timer = System.Timers.Timer;
 
 
 namespace CrawDataFromWebSales
@@ -183,20 +182,20 @@ namespace CrawDataFromWebSales
 
         private void getData()
         {
-            var timer = new Timer(5000);
-            timer.Elapsed += async (s, e) =>
-            {
+            //var timer = new Timer(5000);
+            //timer.Elapsed += async (s, e) =>
+            //{
 
-                if (!isLoadsLinks)
-                {
-                    await getDataAsync();
-                    Load_DataGridView();
-                }
-            };
+            //    if (!isLoadsLinks)
+            //    {
+            //        await getDataAsync();
+            //        Load_DataGridView();
+            //    }
+            //};
 
-            timer.AutoReset = true;
-            timer.Enabled = true;
-            timer.Start();
+            //timer.AutoReset = true;
+            //timer.Enabled = true;
+            //timer.Start();
         }
 
 

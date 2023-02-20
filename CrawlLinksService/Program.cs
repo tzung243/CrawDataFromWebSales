@@ -17,7 +17,7 @@ namespace CrawlLinksService
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
-                new Service1()
+                new CrawlLinksService()
             };
             ServiceBase.Run(ServicesToRun);
         }

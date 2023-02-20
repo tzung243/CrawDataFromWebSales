@@ -1,12 +1,11 @@
-﻿using Nest;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Model
 {
-    [ElasticsearchType]
     public class Product
     {
+        //[Ignore]
         public string _id { get; set; }
         public string name { get; set; }
         public string description { get; set; }

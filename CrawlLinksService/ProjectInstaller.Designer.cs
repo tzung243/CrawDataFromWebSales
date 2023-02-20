@@ -41,7 +41,7 @@
             // 
             this.serviceInstaller1.Description = "Crawl Links Service";
             this.serviceInstaller1.DisplayName = "Crawl Links Service";
-            this.serviceInstaller1.ServiceName = "Service1";
+            this.serviceInstaller1.ServiceName = "CrawlLinksService";
             // 
             // ProjectInstaller
             // 
