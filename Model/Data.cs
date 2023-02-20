@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CrawDataFromWebSales
+namespace Model
 {
     public class Data
     {

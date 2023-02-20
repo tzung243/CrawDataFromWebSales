@@ -1,9 +1,8 @@
-﻿using OpenQA.Selenium.DevTools.V107.Database;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CrawDataFromWebSales
+namespace Model
 {
     public interface IStore
     {

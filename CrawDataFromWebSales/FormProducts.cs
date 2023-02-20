@@ -1,20 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using ESEngine;
+using System;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CrawDataFromWebSales
 {
     public partial class FormProducts : Form
     {
-        EServicce eServicce;
+        EService eService;
         public FormProducts()
         {
             InitializeComponent();
@@ -22,7 +15,7 @@ namespace CrawDataFromWebSales
 
         private void FormProducts_Load(object sender, EventArgs e)
         {
-            eServicce = new EServicce();
+            eService = new EService();
         }
         private void search_Click(object sender, EventArgs e)
         {
@@ -65,7 +58,7 @@ namespace CrawDataFromWebSales
                 createTo = DateTime.ParseExact(dateCre[1], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
             }
 
-            string numberLinksFromTo =  textBox_numberLinkPR.Text;
+            string numberLinksFromTo = textBox_numberLinkPR.Text;
             int numberLinkFrom = -1;
             int numberLinkTo = -1;
             if (numberLinksFromTo != string.Empty)
@@ -75,9 +68,9 @@ namespace CrawDataFromWebSales
                 numberLinkTo = Convert.ToInt16(numberLinks[1]);
             }
 
-            var item = eServicce.getProduct(name, priceFrom, priceTo, createFrom, createTo, numberLinkFrom, numberLinkTo);
+            var item = eService.getProduct(name, priceFrom, priceTo, createFrom, createTo, numberLinkFrom, numberLinkTo);
         }
 
-       
+
     }
 }

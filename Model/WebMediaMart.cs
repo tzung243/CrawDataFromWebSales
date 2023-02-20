@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CrawDataFromWebSales
+namespace Model
 {
     public class WebMediaMart : IStore
     {

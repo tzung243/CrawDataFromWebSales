@@ -1,4 +1,4 @@
-﻿namespace CrawDataFromWebSales
+﻿namespace Model
 {
     public class StoreFactory
     {

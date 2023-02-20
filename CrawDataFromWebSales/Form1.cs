@@ -1,4 +1,6 @@
-﻿using Nest;
+﻿using ESEngine;
+using Model;
+using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace CrawDataFromWebSales
 {
     public partial class Form1 : Form
     {
-        EService eServicce;
+        EService eService;
         int pageNumber = 1;
         private bool isLoadsLinks;
         public Form1()
@@ -21,7 +23,7 @@ namespace CrawDataFromWebSales
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            eServicce = new EService();
+            eService = new EService();
             isLoadsLinks = false;
             DatagirdViewAction.createView(dataGridView);
             await Load_DataGridView();
@@ -31,7 +33,7 @@ namespace CrawDataFromWebSales
 
         private async Task Load_DataGridView()
         {
-            long counter = await eServicce.countIndex("test");
+            long counter = await eService.countIndex("test");
             int pageTail;
             if (counter % 20 == 0)
             {
@@ -109,16 +111,16 @@ namespace CrawDataFromWebSales
 
             var listData = list_url.Select(u => new Data(u, domain));
 
-            await eServicce.indexDatasAsync(listData);
+            await eService.indexDatasAsync(listData);
             await Load_DataGridView();
         }
 
         private async Task<List<Data>> loadPageNumber(int numberPage)
         {
             int numberData = (pageNumber - 1) * 20;
-            long counter = await eServicce.countIndex("test");
+            long counter = await eService.countIndex("test");
 
-            var response = await eServicce.SearchDataFrom(numberData);
+            var response = await eService.SearchDataFrom(numberData);
 
             if (!response.IsValid)
             {
@@ -197,10 +199,10 @@ namespace CrawDataFromWebSales
             timer.Start();
         }
 
-        
+
         private async Task getDataAsync()
         {
-            var data = await getLinkCraw(eServicce.Client);
+            var data = await getLinkCraw(eService.Client);
             if (data != null)
             {
                 ParallelLoopResult result = Parallel.ForEach(data, getData);
@@ -240,19 +242,19 @@ namespace CrawDataFromWebSales
         {
             IStore store = (new StoreFactory()).GetStore(data.url);
             var _data = store.getData(data).Result;
-            eServicce.updateData(_data);
+            eService.updateData(_data);
         }
 
         private void seachLinksProduct_Click(object sender, EventArgs e)
         {
             FormSearch seach = new FormSearch();
-            FormsControl.switchMainForm(this,seach);
+            FormsControl.switchMainForm(this, seach);
         }
 
         private void products_Click(object sender, EventArgs e)
         {
             FormProducts products = new FormProducts();
-            FormsControl.switchMainForm(this,products);
+            FormsControl.switchMainForm(this, products);
         }
 
         private void statisLinksProduct_Click(object sender, EventArgs e)

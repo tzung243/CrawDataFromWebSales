@@ -9,59 +9,61 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
-namespace CrawDataFromWebSales
+namespace Model
 {
-    public class WebNguyenKim : IStore
+    public class WebDienMayXanh : IStore
     {
-        private WebNguyenKim() { }
-        private static WebNguyenKim instance;
 
-        public static WebNguyenKim Instance
+        private WebDienMayXanh() { }
+        private static WebDienMayXanh instance;
+
+        public static WebDienMayXanh Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new WebNguyenKim();
+                    instance = new WebDienMayXanh();
                 }
                 return instance;
             }
         }
 
-        private static string host = "www.nguyenkim.com";
+        private static string host = "www.dienmayxanh.com";
+
         public List<string> getLinkProducts(string url)
         {
-            using (WebDriver driver = new ChromeDriver())
+
+            WebDriver driver = new ChromeDriver();
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
+            driver.Navigate().GoToUrl(url);
+            List<string> hrefTags = new List<string>();
+
+            while (true)
             {
-                driver.Navigate().GoToUrl(url);
-
-                List<string> hrefTags = new List<string>();
-                while (true)
+                try
                 {
-                    hrefTags.AddRange(getLinkProductsInPagination(driver));
-                    try
-                    {
-                        IWebElement next = driver.FindElement(By.CssSelector("a.btn_next"));
-                        driver.Navigate().GoToUrl(next.GetAttribute("href"));
-                    }
-                    catch
-                    {
 
-                        break;
-                    }
+                    IWebElement seeMore = driver.FindElement(By.CssSelector("div.view-more a"));
+                    seeMore.Click();
+                }
+                catch
+                {
+                    break;
                 }
 
-                driver.Quit();
-                return hrefTags;
             }
+            hrefTags = getLinkProducts(driver);
+
+            driver.Quit();
+            return hrefTags;
 
         }
-        private List<string> getLinkProductsInPagination(WebDriver driver)
+        private List<string> getLinkProducts(WebDriver driver)
         {
-            List<IWebElement> links = driver.FindElements(By.CssSelector("a.product-render[href]")).ToList();
+            List<IWebElement> links = driver.FindElements(By.CssSelector("a.main-contain[href]")).ToList();
             List<string> hrefTags = new List<string>();
             foreach (IWebElement link in links)
             {
@@ -72,7 +74,6 @@ namespace CrawDataFromWebSales
             }
             return hrefTags.Distinct().ToList();
         }
-
         public bool isStore(string url)
         {
             Uri uriParsed = new Uri(url);
@@ -83,7 +84,6 @@ namespace CrawDataFromWebSales
         {
             return url.Host.Equals(host);
         }
-
         public string getDomain()
         {
             return host;
@@ -101,6 +101,7 @@ namespace CrawDataFromWebSales
                         AutoDetectEncoding = false,
                         OverrideEncoding = Encoding.UTF8
                     };
+
                     htmlWeb.PreRequest = delegate (HttpWebRequest webReq)
                     {
                         webReq.Timeout = 600000; // number of milliseconds
@@ -114,17 +115,19 @@ namespace CrawDataFromWebSales
 
                     doc = htmlWeb.Load(data.url);
 
-                    string name = doc.DocumentNode.SelectSingleNode(".//h1[@class='product_info_name']").InnerText;
-                    string price = doc.DocumentNode.QuerySelector("span.nk-price-final").InnerText;
-
+                    string name = doc.DocumentNode.SelectSingleNode(".//div[@data-name]").Attributes["data-name"].Value;
+                    string price = doc.DocumentNode.QuerySelector("p.box-price-present").InnerText;
                     price = price.Replace(".", "");
-                    price = price.Replace("đ", "");
+                    price = price.Replace("&#x20AB;", "");
+                    double curPrice;
+                    double.TryParse(price, out curPrice);
 
-                    string description = doc.DocumentNode.SelectSingleNode(".//div[@class='productInfo_description']").InnerText;
+
+                    var description = doc.DocumentNode.SelectSingleNode(".//div[@class='content-article']").InnerText;
 
                     data.status = 1;
                     data.name = name;
-                    data.price = Convert.ToDouble(price.Trim());
+                    data.price = curPrice;
                     data.description = description;
 
                 }
@@ -141,6 +144,7 @@ namespace CrawDataFromWebSales
             data.time_load = DateTime.Now;
             return data;
         }
+
 
     }
 }

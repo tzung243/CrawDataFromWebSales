@@ -1,16 +1,17 @@
-﻿using Nest;
+﻿using Model;
+using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CrawDataFromWebSales
+namespace ESEngine
 {
-    public class EServicce
+    public class EService
     {
         public ElasticClient Client { get; }
 
-        public EServicce()
+        public EService()
         {
             Client = new ElasticClient("craw_data:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvOjQ0MyQ3OGU2Y2Q2OWIwYWQ0NTczYWMwNDNkYThmNDdlZTE0ZiQ4YTM0NTJlMDBlYzU0NzE1YTA1MmQ1MDdjMWRlMDk4NA==",
               new Elasticsearch.Net.ApiKeyAuthenticationCredentials("T3R1c1NJWUJKdUNELWYxb2lhTUM6aWJ5TjNDcmVTYjJpT1BKTFlvUTlFZw=="));
@@ -171,6 +172,21 @@ namespace CrawDataFromWebSales
             return resp.Documents.ToList();
 
         }
+
+        public async Task<List<Data>> getOldestCrawledLinks(int size)
+        {
+            var resp = await Client.SearchAsync<Data>(s => s.Size(size)
+                                                            .Index("test")
+                                                            .Sort(sort => sort
+                                                                    .Script(sd => sd
+                                                                           .Type("number")
+                                                                           .Script(sdd => sdd
+                                                                                  .Source("if(doc['status'].value == 0) { return 0;}" +
+                                                                                           "if(doc['status'].value == 2) {return 1;} return 2;"))
+                                                                           .Ascending())
+                                                                    .Descending(desc => desc.time_load)));
+            return resp.Documents.ToList();
+        }
         /*
 /*
         public async Task<Product> getProductByName(string name)
@@ -247,4 +263,3 @@ namespace CrawDataFromWebSales
 
     }
 }
-

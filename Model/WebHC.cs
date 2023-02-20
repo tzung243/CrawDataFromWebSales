@@ -10,10 +10,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
-namespace CrawDataFromWebSales
+namespace Model
 {
     public class WebHC : IStore
     {
@@ -127,12 +125,12 @@ namespace CrawDataFromWebSales
                     data.status = 1;
                     data.time_load = DateTime.Now;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     data.status = 2;
                     data.time_load = DateTime.Now;
                     tokenSource.Cancel();
-                    MessageBox.Show(e.Message);
+                    //MessageBox.Show(e.Message);
                 }
             };
 

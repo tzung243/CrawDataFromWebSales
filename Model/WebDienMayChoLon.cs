@@ -1,82 +1,89 @@
-﻿using Nest;
+using Fizzler.Systems.HtmlAgilityPack;
+using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
-using HtmlAgilityPack;
-using System.Text;
-using System.Threading.Tasks;
-using Fizzler.Systems.HtmlAgilityPack;
-using System.Windows.Forms;
 using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace CrawDataFromWebSales
+namespace Model
 {
-    public class WebDienMayXanh : IStore
+    public class WebDienMayChoLon : IStore
     {
+        private WebDienMayChoLon() { }
+        private static WebDienMayChoLon instance;
 
-        private WebDienMayXanh() { }
-        private static WebDienMayXanh instance;
-
-        public static WebDienMayXanh Instance
+        public static WebDienMayChoLon Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new WebDienMayXanh();
+                    instance = new WebDienMayChoLon();
                 }
                 return instance;
             }
         }
 
-        private static string host = "www.dienmayxanh.com";
-
+        private static string host = "dienmaycholon.vn";
         public List<string> getLinkProducts(string url)
         {
-
             WebDriver driver = new ChromeDriver();
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
             driver.Navigate().GoToUrl(url);
-            List<string> hrefTags = new List<string>();
 
+            List<string> hrefTags = new List<string>();
             while (true)
             {
                 try
                 {
-
-                    IWebElement seeMore = driver.FindElement(By.CssSelector("div.view-more a"));
+                    IWebElement seeMore = driver.FindElement(By.XPath($"//*[@id=\"js-scroll\"]/div/div[2]/div[4]/div/div[2]/button"));
                     seeMore.Click();
+
                 }
                 catch
+
                 {
+
                     break;
                 }
-
             }
+
             hrefTags = getLinkProducts(driver);
 
             driver.Quit();
-            return hrefTags;
 
+            return hrefTags;
         }
+
         private List<string> getLinkProducts(WebDriver driver)
         {
-            List<IWebElement> links = driver.FindElements(By.CssSelector("a.main-contain[href]")).ToList();
+            List<IWebElement> links = driver.FindElements(By.CssSelector("a.img_pro[href]")).ToList();
             List<string> hrefTags = new List<string>();
             foreach (IWebElement link in links)
             {
-                string href = link.GetAttribute("href");
+                try
+                {
+                    string href = link.GetAttribute("href");
 
-                hrefTags.Add(href);
+                    hrefTags.Add(href);
+
+                }
+                catch
+                {
+                    continue;
+                }
+
 
             }
             return hrefTags.Distinct().ToList();
         }
+
         public bool isStore(string url)
         {
             Uri uriParsed = new Uri(url);
@@ -87,16 +94,20 @@ namespace CrawDataFromWebSales
         {
             return url.Host.Equals(host);
         }
+
         public string getDomain()
         {
             return host;
         }
 
+
         public async Task<Data> getData(Data data)
+
         {
             var tokenSource = new CancellationTokenSource();
-            Action get_Data = () =>
+            Action getData = () =>
             {
+
                 try
                 {
                     HtmlWeb htmlWeb = new HtmlWeb()
@@ -116,37 +127,43 @@ namespace CrawDataFromWebSales
                         OptionUseIdAttribute = true
                     };
 
-                    doc = htmlWeb.Load(data.url);
 
-                    string name = doc.DocumentNode.SelectSingleNode(".//div[@data-name]").Attributes["data-name"].Value;
-                    string price = doc.DocumentNode.QuerySelector("p.box-price-present").InnerText;
-                    price = price.Replace(".", "");
-                    price = price.Replace("&#x20AB;", "");
+                    var documentNode = htmlWeb.Load(data.url).DocumentNode;
+
+                    data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
+                    string price = documentNode.QuerySelector("span.price-pro").InnerText;
+                    price = Regex.Replace(price, "\\D", "");
+
                     double curPrice;
                     double.TryParse(price, out curPrice);
-                    
+                    data.price = curPrice;
 
-                    var description = doc.DocumentNode.SelectSingleNode(".//div[@class='content-article']").InnerText;
+                    var desNodes = documentNode.SelectNodes("//div[@class = 'des_pro_item']")[1]
+                                                    .ChildNodes.Select(n => n.InnerText);
+                    var des = new StringBuilder();
+                    foreach (var node in desNodes)
+                    {
+                        des.Append(node);
+                    }
+                    data.description = des.ToString();
 
                     data.status = 1;
-                    data.name = name;
-                    data.price = curPrice;
-                    data.description = description;
-
+                    data.time_load = DateTime.Now;
                 }
-                catch { 
+                catch
+                {
                     data.status = 2;
                     data.time_load = DateTime.Now;
                     tokenSource.Cancel();
                 }
             };
-            Task crawlTask = new Task(get_Data, tokenSource.Token);
-            crawlTask.Start();
-            await crawlTask;
-            data.time_load = DateTime.Now;
+
+            Task crawlTaks = new Task(getData, tokenSource.Token);
+            crawlTaks.Start();
+            await crawlTaks;
+
             return data;
+
         }
-
-
     }
 }
