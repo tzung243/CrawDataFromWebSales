@@ -72,6 +72,7 @@
             this.dataGridView.RowTemplate.Height = 33;
             this.dataGridView.Size = new System.Drawing.Size(1366, 723);
             this.dataGridView.TabIndex = 22;
+            this.dataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellClick);
             // 
             // menuStrip1
             // 
