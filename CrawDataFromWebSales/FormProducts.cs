@@ -11,6 +11,8 @@ namespace CrawDataFromWebSales
         public FormProducts()
         {
             InitializeComponent();
+            dataGridView1.CellMouseDown += dataGridView1_CellMouseDown;
+            LoadContextMenuStrip();
         }
 
         private void FormProducts_Load(object sender, EventArgs e)
@@ -69,7 +71,96 @@ namespace CrawDataFromWebSales
                 numberLinkTo = Convert.ToInt16(numberLinks[1]);
             }
 
-            var item = eService.getProduct(name, priceFrom, priceTo, createFrom, createTo, numberLinkFrom, numberLinkTo);
+            var items = eService.getProduct(name, priceFrom, priceTo, createFrom, createTo, numberLinkFrom, numberLinkTo);
+            DatagirdViewAction.setProducts(items, dataGridView1);
+        }
+
+        private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex == -1) return;
+
+
+            if (e.Button == MouseButtons.Right)
+            {
+                dataGridView1.ClearSelection();
+
+                DataGridViewCell cell = (sender as DataGridView)[e.ColumnIndex, e.RowIndex];
+                cell.Selected = true;
+                dataGridView1.CurrentCell = cell;
+            }
+        }
+
+        private void LoadContextMenuStrip()
+        {
+            ContextMenuStrip cms = new ContextMenuStrip();
+            cms.Items.Add("Sửa sản phẩm");
+            cms.Items.Add("Xoá");
+
+            cms.ItemClicked += contexMenu_ItemClicked;
+            cms.Opening += Cms_Opening;
+
+            dataGridView1.ContextMenuStrip = cms;
+        }
+
+        private void Cms_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var cms = sender as ContextMenuStrip;
+            var mousepos = Control.MousePosition;
+            if (cms != null)
+            {
+                var rel_mousePos = cms.PointToClient(mousepos);
+                if (cms.ClientRectangle.Contains(rel_mousePos))
+                {
+                    //the mouse pos is on the menu ... 
+                    //looks like the mouse was used to open it
+                    var dataGridView1_rel_mousePos = dataGridView1.PointToClient(mousepos);
+                    var hti = dataGridView1.HitTest(dataGridView1_rel_mousePos.X, dataGridView1_rel_mousePos.Y);
+                    if (hti.RowIndex == -1)
+                    {
+                        // no row ...
+                        e.Cancel = true;
+                    }
+                }
+                else
+                {
+                    //looks like the menu was opened without the mouse ...
+                    //we could cancel the menu, or perhaps use the currently selected cell as reference...
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private async void contexMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+            ToolStripItem item = e.ClickedItem;
+
+            if (dataGridView1.SelectedCells.Count > 0)
+            {
+                var cell = dataGridView1.SelectedCells[0];
+                var row = dataGridView1.Rows[cell.RowIndex];
+
+                string actionType = item.Text;
+                if (actionType.Equals("Sửa sản phẩm"))
+                {
+                    var urlCell = row.Cells[0];
+                    dataGridView1.CurrentCell = urlCell;
+
+                    // TODO
+
+
+                    return;
+                }
+                else if (actionType.Equals("Xoá"))
+                {
+                    await eService.deletedProduct(row.Cells[0].Value.ToString());
+
+                    dataGridView1.Rows.Remove(row);
+                }
+            }
+
+            dataGridView1.CurrentCell = null;
+            dataGridView1.ClearSelection();
         }
     }
 }

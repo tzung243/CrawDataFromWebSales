@@ -32,7 +32,9 @@ namespace Model
         private static string host = "mediamart.vn";
         public List<string> getLinkProducts(string url)
         {
-            WebDriver driver = new ChromeDriver();
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("headless");
+            WebDriver driver = new ChromeDriver(options);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
             driver.Navigate().GoToUrl(url);
 

@@ -26,7 +26,7 @@ namespace CrawDataFromWebSales
                 this.Invoke((MethodInvoker)(async () =>
                 {
                     var minPrice = datas.Min(s => s.price);
-                    var links = datas.Select(s => s.url).ToList();
+                    var ids = datas.Select(s => s._id).ToList();
 
                     var product = new Product()
                     {
@@ -35,8 +35,9 @@ namespace CrawDataFromWebSales
                         branch = branchBox.Text,
                         description = desBox.Text,
                         price = minPrice,
-                        totalLinks = links.Count(),
-                        data_id = links
+                        totalLinks = ids.Count(),
+                        data_id = ids.ToList(),
+                        created = DateTime.Now
                     };
 
                     await eService.createProduct(product);

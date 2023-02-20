@@ -108,6 +108,9 @@ namespace CrawDataFromWebSales
             await Task.Run(() =>
             {
                 List<DataGridViewRow> rows = new List<DataGridViewRow>();
+
+                // get selected rows
+
                 dataGridView1.Invoke((MethodInvoker)(() =>
                 {
                     var selectedRows = dataGridView1.SelectedRows;
@@ -118,6 +121,8 @@ namespace CrawDataFromWebSales
                 }));
 
                 if (rows.Count == 0) return;
+
+
                 var datas = rows.Select(s => new Data()
                 {
                     _id = s.Cells[0].Value.ToString(),

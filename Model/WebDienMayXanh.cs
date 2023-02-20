@@ -35,8 +35,9 @@ namespace Model
 
         public List<string> getLinkProducts(string url)
         {
-
-            WebDriver driver = new ChromeDriver();
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("headless");
+            WebDriver driver = new ChromeDriver(options);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
             driver.Navigate().GoToUrl(url);
             List<string> hrefTags = new List<string>();
@@ -116,11 +117,18 @@ namespace Model
                     doc = htmlWeb.Load(data.url);
 
                     string name = doc.DocumentNode.SelectSingleNode(".//div[@data-name]").Attributes["data-name"].Value;
-                    string price = doc.DocumentNode.QuerySelector("p.box-price-present").InnerText;
-                    price = price.Replace(".", "");
-                    price = price.Replace("&#x20AB;", "");
+
+                    var priceNode = doc.DocumentNode.QuerySelector("p.box-price-present");
                     double curPrice;
-                    double.TryParse(price, out curPrice);
+                    if (priceNode != null)
+                    {
+                        var price = priceNode.InnerHtml.Replace(".", "").Replace("&#x20AB;", "");
+                        double.TryParse(price, out curPrice);
+                    }
+                    else
+                    {
+                        curPrice = -100; // sp khong co gia
+                    }
 
 
                     var description = doc.DocumentNode.SelectSingleNode(".//div[@class='content-article']").InnerText;

@@ -33,8 +33,9 @@ namespace Model
         private static string host = "hc.com.vn";
         public List<string> getLinkProducts(string url)
         {
-
-            using (var driver = new ChromeDriver())
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("headless");
+            using (var driver = new ChromeDriver(options))
             {
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(40);
                 driver.Navigate().GoToUrl(url);

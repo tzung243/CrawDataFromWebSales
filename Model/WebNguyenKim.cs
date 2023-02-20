@@ -33,7 +33,9 @@ namespace Model
         private static string host = "www.nguyenkim.com";
         public List<string> getLinkProducts(string url)
         {
-            using (WebDriver driver = new ChromeDriver())
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("headless");
+            using (WebDriver driver = new ChromeDriver(options))
             {
                 driver.Navigate().GoToUrl(url);
 
