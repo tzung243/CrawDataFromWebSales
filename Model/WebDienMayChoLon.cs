@@ -133,30 +133,26 @@ namespace Model
                     var documentNode = htmlWeb.Load(data.url).DocumentNode;
 
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
-                    var priceNode = documentNode.QuerySelector("span.price-pro");
 
-                    double curPrice;
-                    if (priceNode != null)
+                    double curPrice = -10;
+                    if (documentNode.QuerySelector("strong.price_sale").InnerText != null)
                     {
+                        var priceNode = documentNode.QuerySelector("strong.price_sale");
                         string price = priceNode.InnerText;
                         price = Regex.Replace(price, "\\D", "");
                         double.TryParse(price, out curPrice);
                     }
-                    else
-                    {
-                        curPrice = -10; // k ton tai gia
-                    }
+            
 
                     data.price = curPrice;
 
-                    var desNodes = documentNode.SelectNodes("//div[@class = 'des_pro_item']")[1]
-                                                    .ChildNodes.Select(n => n.InnerText);
-                    var des = new StringBuilder();
-                    foreach (var node in desNodes)
+                    string description = string.Empty;
+                    if(documentNode.QuerySelector("div.feature_item").InnerText != null)
                     {
-                        des.Append(node);
+                        var des = documentNode.QuerySelector("div.feature_item").InnerText;
+                        description = des;
                     }
-                    data.description = des.ToString();
+                    data.description = description;
 
                     data.status = 1;
                     data.time_load = DateTime.Now;

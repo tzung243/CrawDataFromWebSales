@@ -225,7 +225,7 @@ namespace ESEngine
         public List<StatisProducts> statisDomain()
         {
             var query = Client.Search<Data>(q => q
-              .Index("data-index")
+              .Index("test")
               .Size(0)
               .Aggregations(agg => agg.Terms("my-statis", e => e.Field("domain.keyword"))
               )
@@ -252,7 +252,7 @@ namespace ESEngine
         public List<StatisProducts> statisStatus()
         {
             var query = Client.Search<Data>(q => q
-              .Index("data-index")
+              .Index("test")
               .Size(0)
               .Aggregations(agg => agg.Terms("my-statis", e => e.Field("status"))
               )
