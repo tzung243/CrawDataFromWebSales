@@ -91,9 +91,13 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CrawDataFromWebSales\CrawDataFromWebSales.csproj">
-      <Project>{cb5f04c5-c6fa-479d-b579-7c954c69cec0}</Project>
-      <Name>CrawDataFromWebSales</Name>
+    <ProjectReference Include="..\ESEngine\ESEngine.csproj">
+      <Project>{FDC5BC53-6A13-4ABF-9BE5-65134DE2FDEF}</Project>
+      <Name>ESEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{ca03b1b0-f831-4b6b-8ff2-a0da8f0795d1}</Project>
+      <Name>Model</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

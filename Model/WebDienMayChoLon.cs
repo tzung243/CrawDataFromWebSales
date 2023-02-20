@@ -131,7 +131,7 @@ namespace Model
                     var documentNode = htmlWeb.Load(data.url).DocumentNode;
 
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
-                    string price = documentNode.QuerySelector("span.price-pro").InnerText;
+                    string price = documentNode.QuerySelector("div.price_block").InnerText;
                     price = Regex.Replace(price, "\\D", "");
 
                     double curPrice;

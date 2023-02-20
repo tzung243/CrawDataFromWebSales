@@ -105,6 +105,12 @@
     <Compile Include="FormSearch.Designer.cs">
       <DependentUpon>FormSearch.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormStatis.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormStatis.Designer.cs">
+      <DependentUpon>FormStatis.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

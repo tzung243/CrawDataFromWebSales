@@ -13,7 +13,6 @@ namespace CrawDetailService
         Timer timer;
         EService elastic = new EService();
         private DateTime lastRun = DateTime.Now.AddDays(-1);
-        readonly string[] domains = { "www.dienmayxanh.com", "dienmaycholon.vn", "www.nguyenkim.com", "mediamart.vn", "hc.com.vn" };
         public Service1()
         {
             InitializeComponent();

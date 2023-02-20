@@ -187,6 +187,60 @@ namespace ESEngine
                                                                     .Descending(desc => desc.time_load)));
             return resp.Documents.ToList();
         }
+
+        public List<StatisProducts> statisDomain()
+        {
+            var query = Client.Search<Data>(q => q
+              .Index("data-index")
+              .Size(0)
+              .Aggregations(agg => agg.Terms("my-statis", e => e.Field("domain.keyword"))
+              )
+          );
+            try
+            {
+                var results = query.Aggregations
+                .Terms("my-statis")
+                .Buckets
+                .Select(e => new StatisProducts
+                {
+                    Key = e.Key,
+                    count = (long)e.DocCount
+                });
+                return results.ToList();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+        }
+
+        public List<StatisProducts> statisStatus()
+        {
+            var query = Client.Search<Data>(q => q
+              .Index("data-index")
+              .Size(0)
+              .Aggregations(agg => agg.Terms("my-statis", e => e.Field("status"))
+              )
+          );
+            try
+            {
+                var results = query.Aggregations
+                .Terms("my-statis")
+                .Buckets
+                .Select(e => new StatisProducts
+                {
+                    Key = e.Key,
+                    count = (long)e.DocCount
+                });
+                return results.ToList();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+        }
         /*
 /*
         public async Task<Product> getProductByName(string name)
