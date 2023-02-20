@@ -40,9 +40,14 @@ namespace CrawDataFromWebSales
                         created = DateTime.Now
                     };
 
+
+
                     await eService.createProduct(product);
+                    this.Close();
                 }));
+                
             });
+            
         }
     }
 }

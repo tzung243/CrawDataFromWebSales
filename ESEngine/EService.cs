@@ -84,7 +84,7 @@ namespace ESEngine
                     time_load = data.time_load,
                     status = data.status,
                     is_belonged = data.is_belonged,
-                    product_id = data.product_id
+                    product_id = data.product_id,
                 }).Index("test");
                 return ud;
             });
@@ -140,7 +140,13 @@ namespace ESEngine
                 });
                 return searchReq;
             });
-            return resp.Documents.ToList();
+
+            return resp.Hits.Select(
+                hit =>
+                {
+                    hit.Source._id = hit.Id;
+                    return hit.Source;
+                }).ToList();
         }
 
         public List<Product> getProduct(string nameProduct, double price_from, double price_to, DateTime? create_from, DateTime? create_to, int numberlinksFrom, int numberlinksTo)
@@ -190,7 +196,12 @@ namespace ESEngine
                 });
                 return searchReq;
             });
-            return resp.Documents.ToList();
+            return resp.Hits.Select(
+                hit =>
+                {
+                    hit.Source._id = hit.Id;
+                    return hit.Source;
+                }).ToList();
 
         }
 
@@ -272,50 +283,7 @@ namespace ESEngine
 
             return resp.Count == 1;
         }
-        /*
-/*
-        public async Task<Product> getProductByName(string name)
-        {
-            var resp = await Client.SearchAsync<Product>(s => s.From(0)
-                                                       .Size(10)
-                                                       .Index("product")
-                                                       .Query(q => q.Match(m => m.Field(f => f.name).Query(name))));
-            return resp.Documents.First();
-        }
-
-        public async Task<List<Product>> getProductsByPrice(double from, double to)
-        {
-            var resp = await Client.SearchAsync<Product>(s => s.From(0)
-                                                      .Size(10)
-                                                      .Index("test")
-                                                      .Query(q => q.Range(r => r.Field(f => f.price)
-                                                                                        .GreaterThanOrEquals(from)
-                                                                                        .LessThanOrEquals(to))));
-            return resp.Documents.ToList();
-        }
-
-        public async Task<List<Product>> getProductsByCreatedTime(DateTime from, DateTime to)
-        {
-            var resp = await Client.SearchAsync<Product>(s => s.From(0)
-                                                            .Size(10)
-                                                            .Index("test")
-                                                            .Query(q => q.DateRange(r => r.Field(f => f.created)
-                                                                                        .GreaterThanOrEquals(from)
-                                                                                        .LessThanOrEquals(to))));
-            return resp.Documents.ToList();
-        }
-
-        public async Task<List<Product>> getProductsByTotalLinks(int from, int to)
-        {
-            var resp = await Client.SearchAsync<Product>(s => s.From(0)
-                                                            .Size(10)
-                                                            .Index("test")
-                                                            .Query(q => q.Range(r => r.Field(f => f.totalLinks)
-                                                                                        .GreaterThanOrEquals(from)
-                                                                                        .LessThanOrEquals(to))));
-            return resp.Documents.ToList();
-        }
-*/
+       
         public async Task createProduct(Product product)
         {
             var resp = await Client.IndexAsync<Product>(product, i => i.Index("product"));
@@ -346,5 +314,33 @@ namespace ESEngine
             await Client.DeleteAsync<Product>(id, d => d.Index("product"));
         }
 
+        public List<string> getData_idProductbyID(string id)
+        {
+            var resp = Client.Search<Product>(s => s.From(0)
+                                                       .Size(1000)
+                                                       .Index("product")
+                                                       .Query(q => q.Match(m => m.Field(f => f._id).Query(id)))
+                                                       );
+
+            List<string> result = new List<string>();
+
+            foreach (var hit in resp.Hits)
+            {
+                result = hit.Source.data_id; 
+            }
+
+
+            return result;
+        }
+
+        public List<Data> GetDataByID(string id)
+        {
+            var resp = Client.Search<Data>(s => s.From(0)
+                                           .Size(1000)
+                                           .Index("test")
+                                           .Query(q => q.Match(m => m.Field(f => f._id).Query(id)))
+                                           );
+            return resp.Documents.ToList();
+        }
     }
 }

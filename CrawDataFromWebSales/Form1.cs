@@ -24,9 +24,9 @@ namespace CrawDataFromWebSales
         {
             eService = new EService();
             isLoadsLinks = false;
-            DatagirdViewAction.createView(dataGridView);
+            DatagridViewAction.createView(dataGridView);
             await Load_DataGridView();
-            getData();
+            //getData();
         }
 
 
@@ -70,7 +70,7 @@ namespace CrawDataFromWebSales
                 }
                 page_number.Text = pageNumber.ToString();
                 List<Data> list = await loadPageNumber(pageNumber);
-                DatagirdViewAction.setData(list, dataGridView);
+                DatagridViewAction.setData(list, dataGridView);
 
             }));
         }
@@ -180,23 +180,23 @@ namespace CrawDataFromWebSales
 
         }
 
-        private void getData()
+        /*private void getData()
         {
-            //var timer = new Timer(5000);
-            //timer.Elapsed += async (s, e) =>
-            //{
+            var timer = new Timer(5000);
+            timer.Elapsed += async (s, e) =>
+            {
 
-            //    if (!isLoadsLinks)
-            //    {
-            //        await getDataAsync();
-            //        Load_DataGridView();
-            //    }
-            //};
+                if (!isLoadsLinks)
+                {
+                    await getDataAsync();
+                    Load_DataGridView();
+                }
+            };
 
-            //timer.AutoReset = true;
-            //timer.Enabled = true;
-            //timer.Start();
-        }
+            timer.AutoReset = true;
+            timer.Enabled = true;
+            timer.Start();
+        }*/
 
 
         private async Task getDataAsync()
@@ -258,7 +258,8 @@ namespace CrawDataFromWebSales
 
         private void statisLinksProduct_Click(object sender, EventArgs e)
         {
-            //TODO
+            FormStatis statis = new FormStatis();
+            FormsControl.switchMainForm(this,statis);
         }
     }
 }
