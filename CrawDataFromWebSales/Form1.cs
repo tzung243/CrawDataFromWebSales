@@ -257,7 +257,8 @@ namespace CrawDataFromWebSales
 
         private void statisLinksProduct_Click(object sender, EventArgs e)
         {
-            //TODO
+            FormStatis statis = new FormStatis();
+            FormsControl.switchMainForm(this,statis);
         }
     }
 }

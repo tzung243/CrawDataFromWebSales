@@ -49,7 +49,7 @@
             // linksProduct
             // 
             this.linksProduct.Name = "linksProduct";
-            this.linksProduct.Size = new System.Drawing.Size(99, 40);
+            this.linksProduct.Size = new System.Drawing.Size(99, 36);
             this.linksProduct.Text = "Home";
             this.linksProduct.Click += new System.EventHandler(this.linksProduct_Click);
             // 
@@ -66,11 +66,11 @@
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(56, 151);
+            this.dataGridView1.Location = new System.Drawing.Point(52, 174);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 82;
             this.dataGridView1.RowTemplate.Height = 33;
-            this.dataGridView1.Size = new System.Drawing.Size(1366, 746);
+            this.dataGridView1.Size = new System.Drawing.Size(1366, 723);
             this.dataGridView1.TabIndex = 22;
             // 
             // menuStrip1
@@ -83,21 +83,21 @@
             this.search});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1478, 48);
+            this.menuStrip1.Size = new System.Drawing.Size(1478, 40);
             this.menuStrip1.TabIndex = 18;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // statisLinksProduct
             // 
             this.statisLinksProduct.Name = "statisLinksProduct";
-            this.statisLinksProduct.Size = new System.Drawing.Size(90, 40);
+            this.statisLinksProduct.Size = new System.Drawing.Size(90, 36);
             this.statisLinksProduct.Text = "Statis";
             this.statisLinksProduct.Click += new System.EventHandler(this.statisLinksProduct_Click);
             // 
             // search
             // 
             this.search.Name = "search";
-            this.search.Size = new System.Drawing.Size(105, 40);
+            this.search.Size = new System.Drawing.Size(105, 36);
             this.search.Text = "Search";
             this.search.Click += new System.EventHandler(this.search_Click);
             // 

@@ -32,6 +32,22 @@ namespace CrawDataFromWebSales
 
         }
 
+        public static void createViewStatis(DataGridView dataGridView)
+        {
+            dataGridView.RowHeadersVisible = false;
+            dataGridView.AllowUserToAddRows = false;
+            dataGridView.AllowUserToDeleteRows = false;
+            dataGridView.ScrollBars = ScrollBars.Both;
+            dataGridView.ReadOnly = true;
+
+            dataGridView.Columns.Add("type", "Type");
+            dataGridView.Columns[0].Width = (int)(dataGridView.Width * 0.5);
+
+            dataGridView.Columns.Add("Number", "So luong");
+            dataGridView.Columns[1].Width = (int)(dataGridView.Width * 0.5);
+
+        }
+
         private static void addData(Data data, DataGridView dataGridView)
         {
 
@@ -73,6 +89,28 @@ namespace CrawDataFromWebSales
             {
                 addData(item, dataGridView);
             }
+        }
+
+        public static void setDataStatis(List<StatisProducts> data, DataGridView dataGrid)
+        {
+
+            dataGrid.Rows.Clear();
+            if (data.Count > 0)
+            {
+                foreach (var item in data)
+                {
+                    addDataStatis(item, dataGrid);
+                }
+            }
+        }
+        public static void addDataStatis(StatisProducts data, DataGridView dataGrid)
+        {
+            DataGridViewRow row = new DataGridViewRow();
+
+            row.CreateCells(dataGrid);
+            row.Cells[0].Value = data.Key;
+            row.Cells[1].Value = data.count;
+            dataGrid.Rows.Add(row);
         }
     }
 }
