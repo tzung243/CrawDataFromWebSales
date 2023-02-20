@@ -17,5 +17,6 @@ namespace Model
         public DateTime lastUpdated { get; set; }
         public int totalLinks { get; set; }
         public List<string> data_id { get; set; }
+        public string data_idcopy { get; set; }
     }
 }

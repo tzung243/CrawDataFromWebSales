@@ -17,13 +17,13 @@ namespace CrawDataFromWebSales
         private void FormStatis_Load(object sender, EventArgs e)
         {
             eService = new EService();
-            DatagirdViewAction.createViewStatis(dataGridView1);
+            DatagridViewAction.createViewStatis(dataGridView1);
         }
 
         private void domainToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var item = eService.statisDomain();
-            DatagirdViewAction.setDataStatis(item, dataGridView1);
+            DatagridViewAction.setDataStatis(item, dataGridView1);
         }
 
         private void statusToolStripMenuItem_Click(object sender, EventArgs e)
@@ -48,7 +48,7 @@ namespace CrawDataFromWebSales
                 }
             }
 
-            DatagirdViewAction.setDataStatis(list, dataGridView1);
+            DatagridViewAction.setDataStatis(list, dataGridView1);
         }
 
         private void productToolStripMenuItem_Click(object sender, EventArgs e)

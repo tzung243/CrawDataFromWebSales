@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace CrawDataFromWebSales
 {
-    public class DatagirdViewAction
+    public class DatagridViewAction
     {
         public static void createView(DataGridView dataGridView)
         {
@@ -72,17 +72,17 @@ namespace CrawDataFromWebSales
             dgv.Columns[4].Width = (int)(dgv.Width * 0.2);
         }
 
-        private static void addProduct(Product p, DataGridView dgv)
+        private static void addProduct(Product p, DataGridView dataGridView)
         {
             DataGridViewRow row = new DataGridViewRow();
 
-            row.CreateCells(dgv);
+            row.CreateCells(dataGridView);
             row.Cells[0].Value = p._id;
             row.Cells[1].Value = p.name;
             row.Cells[2].Value = p.price;
             row.Cells[3].Value = p.created;
             row.Cells[4].Value = p.totalLinks;
-            dgv.Rows.Add(row);
+            dataGridView.Rows.Add(row);
         }
 
         public static void setProducts(List<Product> ps, DataGridView dgv)
