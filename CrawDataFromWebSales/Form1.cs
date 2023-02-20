@@ -136,29 +136,6 @@ namespace CrawDataFromWebSales
             }
         }
 
-        private void addData(Data data)
-        {
-
-            DataGridViewRow row = new DataGridViewRow();
-            row.Cells[0].Value = data.url;
-            if (data.status == 1)
-            {
-                row.Cells[1].Value = "Thành công";
-                row.Cells[2].Value = $@"C:\demo\{data._id}.txt";
-            }
-            else if (data.status == 0)
-            {
-                row.Cells[1].Value = "Mới";
-            }
-            else if (data.status == 2)
-            {
-                row.Cells[1].Value = "Lỗi";
-
-            }
-            row.Cells[3].Value = data._id;
-            dataGridView.Rows.Add(row);
-        }
-
         private void button_next_Click(object sender, EventArgs e)
         {
             Task.Run(async () =>
@@ -212,7 +189,8 @@ namespace CrawDataFromWebSales
             var response = await client.SearchAsync<Data>(n => n
             .Index("test")
             .From(0)
-            .MatchAll()
+            .Query( q => q
+                .Match(f => f.Field("domain").Query("dienmaycholon.vn")))
             .Sort((sd) =>
             {
                 sd.Ascending(new Field("time_load"));

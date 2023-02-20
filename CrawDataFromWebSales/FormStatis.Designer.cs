@@ -58,7 +58,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 82;
             this.dataGridView1.RowTemplate.Height = 33;
-            this.dataGridView1.Size = new System.Drawing.Size(1366, 756);
+            this.dataGridView1.Size = new System.Drawing.Size(1366, 736);
             this.dataGridView1.TabIndex = 23;
             // 
             // listProductToolStripMenuItem
@@ -67,7 +67,7 @@
             this.domainToolStripMenuItem,
             this.statusToolStripMenuItem});
             this.listProductToolStripMenuItem.Name = "listProductToolStripMenuItem";
-            this.listProductToolStripMenuItem.Size = new System.Drawing.Size(228, 38);
+            this.listProductToolStripMenuItem.Size = new System.Drawing.Size(228, 36);
             this.listProductToolStripMenuItem.Text = " Statis List Product";
             // 
             // domainToolStripMenuItem
@@ -87,7 +87,7 @@
             // productToolStripMenuItem
             // 
             this.productToolStripMenuItem.Name = "productToolStripMenuItem";
-            this.productToolStripMenuItem.Size = new System.Drawing.Size(186, 38);
+            this.productToolStripMenuItem.Size = new System.Drawing.Size(186, 36);
             this.productToolStripMenuItem.Text = " Statis Product";
             this.productToolStripMenuItem.Click += new System.EventHandler(this.productToolStripMenuItem_Click);
             // 
@@ -98,7 +98,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.listProductToolStripMenuItem,
             this.productToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 42);
+            this.menuStrip1.Location = new System.Drawing.Point(0, 40);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1478, 40);
             this.menuStrip1.TabIndex = 0;
@@ -114,28 +114,28 @@
             this.productToolStripMenuItem1});
             this.menuStrip2.Location = new System.Drawing.Point(0, 0);
             this.menuStrip2.Name = "menuStrip2";
-            this.menuStrip2.Size = new System.Drawing.Size(1478, 42);
+            this.menuStrip2.Size = new System.Drawing.Size(1478, 40);
             this.menuStrip2.TabIndex = 24;
             this.menuStrip2.Text = "menuStrip2";
             // 
             // homeToolStripMenuItem
             // 
             this.homeToolStripMenuItem.Name = "homeToolStripMenuItem";
-            this.homeToolStripMenuItem.Size = new System.Drawing.Size(99, 38);
+            this.homeToolStripMenuItem.Size = new System.Drawing.Size(99, 36);
             this.homeToolStripMenuItem.Text = "Home";
             this.homeToolStripMenuItem.Click += new System.EventHandler(this.homeToolStripMenuItem_Click);
             // 
             // searchToolStripMenuItem
             // 
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(105, 38);
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(105, 36);
             this.searchToolStripMenuItem.Text = "Search";
             this.searchToolStripMenuItem.Click += new System.EventHandler(this.searchToolStripMenuItem_Click);
             // 
             // productToolStripMenuItem1
             // 
             this.productToolStripMenuItem1.Name = "productToolStripMenuItem1";
-            this.productToolStripMenuItem1.Size = new System.Drawing.Size(116, 38);
+            this.productToolStripMenuItem1.Size = new System.Drawing.Size(116, 36);
             this.productToolStripMenuItem1.Text = "Product";
             this.productToolStripMenuItem1.Click += new System.EventHandler(this.productToolStripMenuItem1_Click);
             // 
