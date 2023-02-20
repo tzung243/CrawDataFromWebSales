@@ -15,7 +15,23 @@ namespace ESEngine
         {
             Client = new ElasticClient("craw_data:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvOjQ0MyQ3OGU2Y2Q2OWIwYWQ0NTczYWMwNDNkYThmNDdlZTE0ZiQ4YTM0NTJlMDBlYzU0NzE1YTA1MmQ1MDdjMWRlMDk4NA==",
               new Elasticsearch.Net.ApiKeyAuthenticationCredentials("T3R1c1NJWUJKdUNELWYxb2lhTUM6aWJ5TjNDcmVTYjJpT1BKTFlvUTlFZw=="));
+
+            //var listUrls = new Uri[]
+            //  {
+            //    new Uri("http://localhost:9200/")
+            //  };
+
+            //var conPool = new StaticConnectionPool(listUrls);
+            //var conSettings = new ConnectionSettings(conPool);
+
+            //conSettings.ThrowExceptions();
+            //conSettings.PrettyJson();
+            //conSettings.RequestTimeout(TimeSpan.FromMinutes(2));
+            //this.Client = new ElasticClient(conSettings);
+
             //Client.Indices.Create("product", c => c.Map<Product>(m => m.AutoMap()));
+            //Client.Indices.Create("link", c => c.Map<Data>(m => m.AutoMap()));
+
         }
 
         public async Task<long> countIndex(string index)
@@ -48,6 +64,11 @@ namespace ESEngine
                                         .Size(20)
                                         );
             return response;
+        }
+
+        public void createData(Data data)
+        {
+            Client.Index<Data>(data, s => s.Index("test"));
         }
         public void updateData(Data data)
         {
@@ -184,9 +205,9 @@ namespace ESEngine
 
         }
 
-        public async Task<List<Data>> getOldestCrawledLinks(int size)
+        public List<Data> getOldestCrawledLinks(int size)
         {
-            var resp = await Client.SearchAsync<Data>(s => s.Size(size)
+            var resp = Client.Search<Data>(s => s.Size(size)
                                                             .Index("test")
                                                             .Sort(sort => sort
                                                                     .Script(sd => sd

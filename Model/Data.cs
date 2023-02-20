@@ -4,6 +4,7 @@ namespace Model
 {
     public class Data
     {
+        //[Ignore]
         public string _id { get; set; }
         public string url { get; set; }
         public string name { get; set; }

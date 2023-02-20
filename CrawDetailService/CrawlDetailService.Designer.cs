@@ -1,6 +1,6 @@
 ﻿namespace CrawDetailService
 {
-    partial class Service1
+    partial class CrawlDetailService
     {
         /// <summary> 
         /// Required designer variable.
