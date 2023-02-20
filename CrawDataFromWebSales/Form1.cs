@@ -11,7 +11,7 @@ namespace CrawDataFromWebSales
 {
     public partial class Form1 : Form
     {
-        EService eServicce;
+        EServicce eServicce;
         int pageNumber = 1;
         private bool isLoadsLinks;
         public Form1()
@@ -21,7 +21,7 @@ namespace CrawDataFromWebSales
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            eServicce = new EService();
+            eServicce = new EServicce();
             isLoadsLinks = false;
             DatagirdViewAction.createView(dataGridView);
             await Load_DataGridView();
