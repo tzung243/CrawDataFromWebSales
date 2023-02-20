@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace CrawDataFromWebSales
 {
-    public class DatagirdViewAction
+    public class DatagridViewAction
     {
         public static void createView(DataGridView dataGridView)
         {

@@ -18,7 +18,7 @@ namespace CrawDataFromWebSales
         private void FormProducts_Load(object sender, EventArgs e)
         {
             eService = new EService();
-            DatagirdViewAction.createViewProduct(dataGridView);
+            DatagridViewAction.createViewProduct(dataGridView);
         }
         private void search_Click(object sender, EventArgs e)
         {
@@ -73,7 +73,7 @@ namespace CrawDataFromWebSales
             }
 
             var items = eService.getProduct(name, priceFrom, priceTo, createFrom, createTo, numberLinkFrom, numberLinkTo);
-            DatagirdViewAction.setProducts(items, dataGridView);
+            DatagridViewAction.setProducts(items, dataGridView);
         }
 
         private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -162,6 +162,23 @@ namespace CrawDataFromWebSales
 
             dataGridView.CurrentCell = null;
             dataGridView.ClearSelection();
+        }
+
+        private void dataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var id = dataGridView.Rows[e.RowIndex].Cells[0].Value.ToString();
+            string nameProduct = dataGridView.Rows[e.RowIndex].Cells[1].Value.ToString();
+            string priceProduct = dataGridView.Rows[e.RowIndex].Cells[2].Value.ToString();
+
+            DetailProduct detail = new DetailProduct(id, nameProduct, priceProduct); 
+            detail.ShowDialog();
+            
+
+
+
+
+            
+
         }
     }
 }
