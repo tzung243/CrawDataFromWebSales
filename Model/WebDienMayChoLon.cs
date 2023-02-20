@@ -133,7 +133,7 @@ namespace Model
                     var documentNode = htmlWeb.Load(data.url).DocumentNode;
 
                     data.name = documentNode.SelectSingleNode("//h1").InnerHtml;
-                    var priceNode = documentNode.QuerySelector("div.price_block");
+                    var priceNode = documentNode.QuerySelector("span.price-pro");
 
                     double curPrice;
                     if (priceNode != null)
