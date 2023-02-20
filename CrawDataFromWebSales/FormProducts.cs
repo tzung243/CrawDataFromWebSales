@@ -11,13 +11,14 @@ namespace CrawDataFromWebSales
         public FormProducts()
         {
             InitializeComponent();
-            dataGridView1.CellMouseDown += dataGridView1_CellMouseDown;
+            dataGridView.CellMouseDown += dataGridView1_CellMouseDown;
             LoadContextMenuStrip();
         }
 
         private void FormProducts_Load(object sender, EventArgs e)
         {
             eService = new EService();
+            DatagirdViewAction.createViewProduct(dataGridView);
         }
         private void search_Click(object sender, EventArgs e)
         {
@@ -72,7 +73,7 @@ namespace CrawDataFromWebSales
             }
 
             var items = eService.getProduct(name, priceFrom, priceTo, createFrom, createTo, numberLinkFrom, numberLinkTo);
-            DatagirdViewAction.setProducts(items, dataGridView1);
+            DatagirdViewAction.setProducts(items, dataGridView);
         }
 
         private void dataGridView1_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -82,11 +83,11 @@ namespace CrawDataFromWebSales
 
             if (e.Button == MouseButtons.Right)
             {
-                dataGridView1.ClearSelection();
+                dataGridView.ClearSelection();
 
                 DataGridViewCell cell = (sender as DataGridView)[e.ColumnIndex, e.RowIndex];
                 cell.Selected = true;
-                dataGridView1.CurrentCell = cell;
+                dataGridView.CurrentCell = cell;
             }
         }
 
@@ -99,7 +100,7 @@ namespace CrawDataFromWebSales
             cms.ItemClicked += contexMenu_ItemClicked;
             cms.Opening += Cms_Opening;
 
-            dataGridView1.ContextMenuStrip = cms;
+            dataGridView.ContextMenuStrip = cms;
         }
 
         private void Cms_Opening(object sender, System.ComponentModel.CancelEventArgs e)
@@ -113,8 +114,8 @@ namespace CrawDataFromWebSales
                 {
                     //the mouse pos is on the menu ... 
                     //looks like the mouse was used to open it
-                    var dataGridView1_rel_mousePos = dataGridView1.PointToClient(mousepos);
-                    var hti = dataGridView1.HitTest(dataGridView1_rel_mousePos.X, dataGridView1_rel_mousePos.Y);
+                    var dataGridView1_rel_mousePos = dataGridView.PointToClient(mousepos);
+                    var hti = dataGridView.HitTest(dataGridView1_rel_mousePos.X, dataGridView1_rel_mousePos.Y);
                     if (hti.RowIndex == -1)
                     {
                         // no row ...
@@ -135,16 +136,16 @@ namespace CrawDataFromWebSales
 
             ToolStripItem item = e.ClickedItem;
 
-            if (dataGridView1.SelectedCells.Count > 0)
+            if (dataGridView.SelectedCells.Count > 0)
             {
-                var cell = dataGridView1.SelectedCells[0];
-                var row = dataGridView1.Rows[cell.RowIndex];
+                var cell = dataGridView.SelectedCells[0];
+                var row = dataGridView.Rows[cell.RowIndex];
 
                 string actionType = item.Text;
                 if (actionType.Equals("Sửa sản phẩm"))
                 {
                     var urlCell = row.Cells[0];
-                    dataGridView1.CurrentCell = urlCell;
+                    //dataGridView.CurrentCell = urlCell;
 
                     // TODO
 
@@ -155,12 +156,12 @@ namespace CrawDataFromWebSales
                 {
                     await eService.deletedProduct(row.Cells[0].Value.ToString());
 
-                    dataGridView1.Rows.Remove(row);
+                    dataGridView.Rows.Remove(row);
                 }
             }
 
-            dataGridView1.CurrentCell = null;
-            dataGridView1.ClearSelection();
+            dataGridView.CurrentCell = null;
+            dataGridView.ClearSelection();
         }
     }
 }

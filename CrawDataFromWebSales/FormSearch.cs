@@ -103,38 +103,81 @@ namespace CrawDataFromWebSales
 
         }
 
-        private async void button_createPr_Click(object sender, EventArgs e)
+        private void button_createPr_Click(object sender, EventArgs e)
         {
-            await Task.Run(() =>
-            {
+          
                 List<DataGridViewRow> rows = new List<DataGridViewRow>();
+
+
+                List<Data> result = new List<Data>();
+                var selectedRows = dataGridView1.SelectedRows;
+
+                foreach (DataGridViewRow s in dataGridView1.SelectedRows)
+                {
+                  
+                    var data = new Data()
+                    {
+                        _id = s.Cells[0].Value.ToString(),
+                        url = s.Cells[1].Value.ToString(),
+                        //status = int.Parse(s.Cells[2].Value.ToString()),
+                        name = s.Cells[3].Value.ToString(),
+                        price = double.Parse(s.Cells[4].Value.ToString())
+                    };
+                    result.Add(data);
+
+                }
+                var createForm = new FormCreateProduct(result);
+                createForm.ShowDialog();
+
 
                 // get selected rows
 
-                dataGridView1.Invoke((MethodInvoker)(() =>
-                {
-                    var selectedRows = dataGridView1.SelectedRows;
-                    for (int i = 0; i < selectedRows.Count; i++)
-                    {
-                        rows.Add(selectedRows[i]);
-                    }
-                }));
+                /*         dataGridView1.Invoke((MethodInvoker)(() =>
+                         {
+                             *//*var selectedRows = dataGridView1.SelectedRows;
+                             for (int i = 0; i < selectedRows.Count; i++)
+                             {
+                                 rows.Add(selectedRows[i]);
+                             }*//*
+                             List<Data> result = new List<Data>();
+                             var selectedRows = dataGridView1.SelectedRows;
 
-                if (rows.Count == 0) return;
+                             foreach (DataGridViewRow s in selectedRows)
+                             {
+                                 var i = s.Cells[0].Value.ToString();
+                                 var data = new Data()
+                                 {
+                                     _id = s.Cells[0].Value.ToString(),
+                                     url = s.Cells[1].Value.ToString(),
+                                     //status = int.Parse(s.Cells[2].Value.ToString()),
+                                     name = s.Cells[3].Value.ToString(),
+                                     price = double.Parse(s.Cells[4].Value.ToString())
+                                 };
+                                 result.Add(data);
+
+                             }
+                             var createForm = new FormCreateProduct(result);
+                             createForm.ShowDialog();
+
+                         }));*/
+
+                /*  if (rows.Count == 0) return;
+  */
 
 
-                var datas = rows.Select(s => new Data()
+                /*var datas = rows.Select(s => new Data()
                 {
                     _id = s.Cells[0].Value.ToString(),
                     url = s.Cells[1].Value.ToString(),
                     status = int.Parse(s.Cells[2].Value.ToString()),
                     name = s.Cells[3].Value.ToString(),
                     price = double.Parse(s.Cells[4].Value.ToString())
-                });
-                var createForm = new FormCreateProduct(datas.ToList());
-                createForm.ShowDialog();
+                });*/
+                /* var createForm = new FormCreateProduct(result);
+                 createForm.ShowDialog();*/
 
-            });
+
+
 
 
         }

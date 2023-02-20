@@ -119,7 +119,13 @@ namespace ESEngine
                 });
                 return searchReq;
             });
-            return resp.Documents.ToList();
+
+            return resp.Hits.Select(
+                hit =>
+                {
+                    hit.Source._id = hit.Id;
+                    return hit.Source;
+                }).ToList();
         }
 
         public List<Product> getProduct(string nameProduct, double price_from, double price_to, DateTime? create_from, DateTime? create_to, int numberlinksFrom, int numberlinksTo)
@@ -169,7 +175,12 @@ namespace ESEngine
                 });
                 return searchReq;
             });
-            return resp.Documents.ToList();
+            return resp.Hits.Select(
+                hit =>
+                {
+                    hit.Source._id = hit.Id;
+                    return hit.Source;
+                }).ToList();
 
         }
 

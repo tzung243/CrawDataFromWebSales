@@ -183,7 +183,7 @@ namespace CrawDataFromWebSales
 
         private void getData()
         {
-            var timer = new Timer(5000);
+            /*var timer = new Timer(5000);
             timer.Elapsed += async (s, e) =>
             {
 
@@ -196,7 +196,7 @@ namespace CrawDataFromWebSales
 
             timer.AutoReset = true;
             timer.Enabled = true;
-            timer.Start();
+            timer.Start();*/
         }
 
 
@@ -259,7 +259,8 @@ namespace CrawDataFromWebSales
 
         private void statisLinksProduct_Click(object sender, EventArgs e)
         {
-            //TODO
+            FormStatis statis = new FormStatis();
+            FormsControl.switchMainForm(this,statis);
         }
     }
 }

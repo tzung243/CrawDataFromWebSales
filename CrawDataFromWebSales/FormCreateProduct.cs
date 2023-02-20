@@ -41,8 +41,11 @@ namespace CrawDataFromWebSales
                     };
 
                     await eService.createProduct(product);
+                    this.Close();
                 }));
+                
             });
+            
         }
     }
 }
