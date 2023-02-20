@@ -44,7 +44,7 @@
             // linksProduct
             // 
             this.linksProduct.Name = "linksProduct";
-            this.linksProduct.Size = new System.Drawing.Size(99, 38);
+            this.linksProduct.Size = new System.Drawing.Size(99, 36);
             this.linksProduct.Text = "Home";
             this.linksProduct.Click += new System.EventHandler(this.linksProduct_Click);
             // 
@@ -56,6 +56,7 @@
             this.button_search.TabIndex = 23;
             this.button_search.Text = "Search";
             this.button_search.UseVisualStyleBackColor = true;
+            this.button_search.Click += new System.EventHandler(this.button_search_Click);
             // 
             // dataGridView1
             // 
@@ -107,21 +108,21 @@
             this.search});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1478, 48);
+            this.menuStrip1.Size = new System.Drawing.Size(1478, 40);
             this.menuStrip1.TabIndex = 18;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // statisLinksProduct
             // 
             this.statisLinksProduct.Name = "statisLinksProduct";
-            this.statisLinksProduct.Size = new System.Drawing.Size(90, 38);
+            this.statisLinksProduct.Size = new System.Drawing.Size(90, 36);
             this.statisLinksProduct.Text = "Statis";
             this.statisLinksProduct.Click += new System.EventHandler(this.statisLinksProduct_Click);
             // 
             // search
             // 
             this.search.Name = "search";
-            this.search.Size = new System.Drawing.Size(105, 44);
+            this.search.Size = new System.Drawing.Size(105, 36);
             this.search.Text = "Search";
             this.search.Click += new System.EventHandler(this.search_Click);
             // 
