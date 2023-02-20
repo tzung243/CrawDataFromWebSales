@@ -5,14 +5,14 @@ namespace CrawDataFromWebSales
     public class Product
     {
         public string _id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public int Price { get; set; }
-        public string Branch { get; set; }
-        public string Model { get; set; }
-        public int Status { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime LastUpdated { get; set; }
-        public int TotalLinks { get; set; }
+        public string name { get; set; }
+        public string description { get; set; }
+        public int price { get; set; }
+        public string branch { get; set; }
+        public string model { get; set; }
+        public int status { get; set; }
+        public DateTime created { get; set; }
+        public DateTime lastUpdated { get; set; }
+        public int totalLinks { get; set; }
     }
 }

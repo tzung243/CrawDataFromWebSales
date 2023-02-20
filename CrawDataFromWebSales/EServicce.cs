@@ -8,7 +8,7 @@ namespace CrawDataFromWebSales
 {
     public class EServicce
     {
-        private ElasticClient Client { get; }
+        public ElasticClient Client { get; }
 
         public EServicce()
         {
@@ -26,14 +26,14 @@ namespace CrawDataFromWebSales
 
         public async Task indexDatasAsync(IEnumerable<Data> list)
         {
-            var response = await Client.IndexManyAsync(list, "data-index");
+            var response = await Client.IndexManyAsync(list, "test");
 
         }
 
         public async Task<ISearchResponse<Data>> SearchDataFrom(int from)
         {
             var response = await Client.SearchAsync<Data>(s => s
-                                        .Index("data-index")
+                                        .Index("test")
                                         .Query(q => q
                                             .MatchAll()
                                             )
@@ -68,49 +68,153 @@ namespace CrawDataFromWebSales
             });
         }
 
-
-        public async Task<List<Data>> getLinks(string nameProduct, int status, string domain, double priceFrom, double priceTo,
-                                        DateTime updatedFrom, DateTime updatedTo, DateTime createdFrom, DateTime createdTo, bool isBelonged)
+        public List<Data> getLinksProduct(string nameProduct, int status, string domain, double price_from, double price_to, DateTime? update_from, DateTime? update_to, DateTime? create_from, DateTime? create_to, bool isBelonged)
         {
-            var resp = await Client.SearchAsync<Data>(s => s.From(0)
-                                                       .Size(10)
-                                                       .Index("test")
-                                                       .Query(q => q.Bool(b => b.Must(m => m.Match(ma => ma.Field(f => f.name).Query(nameProduct))
-                                                                                            && m.Term(t => t.domain, domain)
-                                                                                            && m.Range(r => r.Field(f => f.price)
-                                                                                                              .GreaterThanOrEquals(priceFrom)
-                                                                                                              .LessThanOrEquals(priceTo)))
-                                                                                .Filter(f => f.Term(t => t.status, status))
-                                                                                .Filter(f => f.DateRange(d => d.Field(fie => fie.time_update)
-                                                                                                                .GreaterThanOrEquals(updatedFrom.Date)
-                                                                                                                .LessThanOrEquals(updatedTo.AddDays(1).AddSeconds(-1))))
-                                                                                .Filter(f => f.DateRange(d => d.Field(fie => fie.time_create)
-                                                                                                                .GreaterThanOrEquals(createdFrom.Date)
-                                                                                                                .LessThanOrEquals(createdTo.AddDays(1).AddSeconds(-1))))
-                                                                                .Filter(f => f.Term(t => t.is_belonged, isBelonged))
-                                                                           )));
+            var resp = Client.Search<Data>((searchReq) =>
+            {
+                searchReq.Index("test").From(0).Size(1000);
+
+                searchReq.Query((queryReq) =>
+                {
+                    queryReq.Bool((boolReq) =>
+                    {
+                        var _boolReq = boolReq;
+                        _boolReq = boolReq.Must((queries) =>
+                        {
+                            dynamic _queries = queries;
+                            if (nameProduct != string.Empty)
+                                _queries = _queries && queries.Match((matchNameReq) => matchNameReq.Field(fields => fields.name).Query(nameProduct));
+                            if (domain != string.Empty)
+                                _queries = _queries && queries.Term((termReq) => termReq.domain, domain);
+                            if (price_from != -1 && price_to != -1)
+                                _queries = _queries && queries.Range(r => r.Field(f => f.price)
+                                       .GreaterThanOrEquals(price_from)
+                                                .LessThanOrEquals(price_to));
+                            return _queries;
+                        });
+                        _boolReq = _boolReq.Filter(filter =>
+                        {
+                            dynamic _filter = filter;
+                            if (status != -1)
+                                _filter = _filter && filter.Term((termReq) => termReq.status, status);
+
+
+                            if (update_from != null && update_from != null)
+                                _filter = _filter && filter.DateRange(d => d.Field(fie => fie.time_update)
+                                                            .GreaterThanOrEquals(update_from)
+                                                            .LessThanOrEquals(update_to));
+                            if (create_from != null && create_from != null)
+                                _filter = _filter && filter.DateRange(d => d.Field(fie => fie.time_create)
+                                                                                            .GreaterThanOrEquals(create_from)
+                                                                                            .LessThanOrEquals(create_to));
+                            if (isBelonged)
+                                _filter = _filter && filter.Term(t => t.is_belonged, isBelonged);
+
+                            return _filter;
+                        });
+                        return _boolReq;
+                    });
+                    return queryReq;
+                });
+                return searchReq;
+            });
             return resp.Documents.ToList();
         }
 
-        public async Task<List<Product>> getProducts(string name, double priceFrom, double priceTo, DateTime createdFrom, DateTime createdTo, int totalLinksFrom, int totalLinksTo)
+        public List<Product> getProduct(string nameProduct, double price_from, double price_to, DateTime? create_from, DateTime? create_to, int numberlinksFrom, int numberlinksTo)
+        {
+            var resp = Client.Search<Product>((searchReq) =>
+            {
+                searchReq.Index("product").From(0).Size(1000);
+
+                searchReq.Query((queryReq) =>
+                {
+                    queryReq.Bool((boolReq) =>
+                    {
+                        var _boolReq = boolReq;
+                        _boolReq = boolReq.Must((queries) =>
+                        {
+                            dynamic _queries = queries;
+                            if (nameProduct != string.Empty)
+                                _queries = _queries && queries.Match((matchNameReq) => matchNameReq.Field(fields => fields.name).Query(nameProduct));
+
+
+                            if (price_from != -1 && price_to != -1)
+                                _queries = _queries && queries.Range(r => r.Field(f => f.price)
+                                       .GreaterThanOrEquals(price_from)
+                                                .LessThanOrEquals(price_to));
+
+                            if (numberlinksFrom != -1 && numberlinksTo != -1)
+                                _queries = _queries && queries.Range(r => r.Field(f => f.totalLinks)
+                            .GreaterThanOrEquals(numberlinksFrom)
+                            .LessThanOrEquals(numberlinksTo));
+                            return _queries;
+                        });
+
+                        _boolReq = _boolReq.Filter(filter =>
+                        {
+                            dynamic _filter = filter;
+                            if (create_from != null && create_from != null)
+                                _filter = _filter && filter.DateRange(d => d.Field(fie => fie.created)
+                                                                                            .GreaterThanOrEquals(create_from)
+                                                                                            .LessThanOrEquals(create_to));
+
+
+                            return _filter;
+                        });
+                        return _boolReq;
+                    });
+                    return queryReq;
+                });
+                return searchReq;
+            });
+            return resp.Documents.ToList();
+
+        }
+        /*
+/*
+        public async Task<Product> getProductByName(string name)
         {
             var resp = await Client.SearchAsync<Product>(s => s.From(0)
                                                        .Size(10)
                                                        .Index("product")
-                                                       .Query(q => q.Bool(b => b.Must(m => m.Match(ma => ma.Field(f => f.Name).Query(name))
-                                                                                            && m.Range(r => r.Field(f => f.Price)
-                                                                                                              .GreaterThanOrEquals(priceFrom)
-                                                                                                              .LessThanOrEquals(priceTo))
-                                                                                            && m.Range(r => r.Field(fie => fie.TotalLinks)
-                                                                                                             .GreaterThanOrEquals(totalLinksFrom)
-                                                                                                             .LessThanOrEquals(totalLinksTo)))
-                                                                                .Filter(f => f.DateRange(d => d.Field(fie => fie.Created)
-                                                                                                                .GreaterThanOrEquals(createdFrom.Date)
-                                                                                                                .LessThanOrEquals(createdTo.AddDays(1).AddSeconds(-1))))
-                                                                           )));
+                                                       .Query(q => q.Match(m => m.Field(f => f.name).Query(name))));
+            return resp.Documents.First();
+        }
+
+        public async Task<List<Product>> getProductsByPrice(double from, double to)
+        {
+            var resp = await Client.SearchAsync<Product>(s => s.From(0)
+                                                      .Size(10)
+                                                      .Index("test")
+                                                      .Query(q => q.Range(r => r.Field(f => f.price)
+                                                                                        .GreaterThanOrEquals(from)
+                                                                                        .LessThanOrEquals(to))));
             return resp.Documents.ToList();
         }
 
+        public async Task<List<Product>> getProductsByCreatedTime(DateTime from, DateTime to)
+        {
+            var resp = await Client.SearchAsync<Product>(s => s.From(0)
+                                                            .Size(10)
+                                                            .Index("test")
+                                                            .Query(q => q.DateRange(r => r.Field(f => f.created)
+                                                                                        .GreaterThanOrEquals(from)
+                                                                                        .LessThanOrEquals(to))));
+            return resp.Documents.ToList();
+        }
+
+        public async Task<List<Product>> getProductsByTotalLinks(int from, int to)
+        {
+            var resp = await Client.SearchAsync<Product>(s => s.From(0)
+                                                            .Size(10)
+                                                            .Index("test")
+                                                            .Query(q => q.Range(r => r.Field(f => f.totalLinks)
+                                                                                        .GreaterThanOrEquals(from)
+                                                                                        .LessThanOrEquals(to))));
+            return resp.Documents.ToList();
+        }
+*/
         public async Task createProduct(Product product)
         {
             var resp = await Client.IndexAsync<Product>(product, i => i.Index("product"));
@@ -122,15 +226,15 @@ namespace CrawDataFromWebSales
             var par = new Product
             {
                 _id = product._id,
-                Name = product.Name,
-                Description = product.Description,
-                Price = product.Price,
-                Branch = product.Branch,
-                Model = product.Model,
-                Created = product.Created,
-                LastUpdated = product.LastUpdated,
-                Status = product.Status,
-                TotalLinks = product.TotalLinks
+                name = product.name,
+                description = product.description,
+                price = product.price,
+                branch = product.branch,
+                model = product.model,
+                created = product.created,
+                lastUpdated = product.lastUpdated,
+                status = product.status,
+                totalLinks = product.totalLinks
             };
 
             await Client.UpdateAsync<Product>(product._id, u => u.Doc(par).Index("product"));
