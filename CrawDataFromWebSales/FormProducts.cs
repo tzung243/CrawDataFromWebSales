@@ -71,7 +71,5 @@ namespace CrawDataFromWebSales
 
             var item = eService.getProduct(name, priceFrom, priceTo, createFrom, createTo, numberLinkFrom, numberLinkTo);
         }
-
-
     }
 }

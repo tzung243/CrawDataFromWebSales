@@ -15,6 +15,7 @@ namespace ESEngine
         {
             Client = new ElasticClient("craw_data:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvOjQ0MyQ3OGU2Y2Q2OWIwYWQ0NTczYWMwNDNkYThmNDdlZTE0ZiQ4YTM0NTJlMDBlYzU0NzE1YTA1MmQ1MDdjMWRlMDk4NA==",
               new Elasticsearch.Net.ApiKeyAuthenticationCredentials("T3R1c1NJWUJKdUNELWYxb2lhTUM6aWJ5TjNDcmVTYjJpT1BKTFlvUTlFZw=="));
+            //Client.Indices.Create("product", c => c.Map<Product>(m => m.AutoMap()));
         }
 
         public async Task<long> countIndex(string index)
@@ -46,7 +47,6 @@ namespace ESEngine
                                         .From(from)
                                         .Size(20)
                                         );
-
             return response;
         }
         public void updateData(Data data)
@@ -188,6 +188,8 @@ namespace ESEngine
             return resp.Documents.ToList();
         }
 
+
+
         public List<StatisProducts> statisDomain()
         {
             var query = Client.Search<Data>(q => q
@@ -240,6 +242,14 @@ namespace ESEngine
                 return null;
             }
 
+        }
+
+        public bool checkExitsData(string url)
+        {
+            var resp = Client.Count<Data>(c => c.Index("test")
+                                                .Query(q => q.Match(m => m.Field("url.keyword").Query(url))));
+
+            return resp.Count == 1;
         }
         /*
 /*

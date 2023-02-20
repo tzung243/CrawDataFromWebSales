@@ -1,6 +1,10 @@
 ﻿using ESEngine;
+using Model;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CrawDataFromWebSales
@@ -38,65 +42,96 @@ namespace CrawDataFromWebSales
 
         private async void button_search_Click(object sender, EventArgs e)
         {
-            string name = textBox1.Text;
-
-            string status_text = comboBox_status.Text;
-            int status = -1;
-            switch (status_text)
+            await Task.Run(() =>
             {
-                case "Moi":
-                    status = 0;
-                    break;
-                case "Thanh cong":
-                    status = 1;
-                    break;
-                case "Loi":
-                    status = 2;
-                    break;
-            }
+                this.Invoke((MethodInvoker)(() =>
+                {
+                    string name = textBox1.Text;
 
-            string domain = comboBox_domain.Text;
+                    string status_text = comboBox_status.Text;
+                    int status = -1;
+                    switch (status_text)
+                    {
+                        case "Moi":
+                            status = 0;
+                            break;
+                        case "Thanh cong":
+                            status = 1;
+                            break;
+                        case "Loi":
+                            status = 2;
+                            break;
+                    }
 
-            string priceFromTo = textBox_price.Text;
-            double priceFrom = -1;
-            double priceTo = -1;
-            if (priceFromTo != string.Empty)
-            {
-                var price = priceFromTo.Split('-');
-                priceFrom = Convert.ToDouble(price[0]);
-                priceTo = Convert.ToDouble(price[1]);
-            }
+                    string domain = comboBox_domain.Text;
 
-            string dateUpdateFromTo = tb_timeUpdate.Text;
-            DateTime? updateFrom = null;
-            DateTime? updateTo = null;
-            if (dateUpdateFromTo != string.Empty)
-            {
-                var dateUp = dateUpdateFromTo.Split('-');
-                updateFrom = DateTime.ParseExact(dateUp[0], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
-                updateTo = DateTime.ParseExact(dateUp[1], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
-            }
+                    string priceFromTo = textBox_price.Text;
+                    double priceFrom = -1;
+                    double priceTo = -1;
+                    if (priceFromTo != string.Empty)
+                    {
+                        var price = priceFromTo.Split('-');
+                        priceFrom = Convert.ToDouble(price[0]);
+                        priceTo = Convert.ToDouble(price[1]);
+                    }
 
-            string dateCreateFromTo = tb_timeUpdate.Text;
-            DateTime? createFrom = null;
-            DateTime? createTo = null;
-            if (dateCreateFromTo != string.Empty)
-            {
-                var dateCre = dateCreateFromTo.Split('-');
-                createFrom = DateTime.ParseExact(dateCre[0], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
-                createTo = DateTime.ParseExact(dateCre[1], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
-            }
+                    string dateUpdateFromTo = tb_timeUpdate.Text;
+                    DateTime? updateFrom = null;
+                    DateTime? updateTo = null;
+                    if (dateUpdateFromTo != string.Empty)
+                    {
+                        var dateUp = dateUpdateFromTo.Split('-');
+                        updateFrom = DateTime.ParseExact(dateUp[0], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
+                        updateTo = DateTime.ParseExact(dateUp[1], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
+                    }
 
-            var item = eService.getLinksProduct(name, status, domain, priceFrom, priceTo, updateFrom, updateTo, createFrom, createTo, this.checkBox1.Checked);
+                    string dateCreateFromTo = tb_timeUpdate.Text;
+                    DateTime? createFrom = null;
+                    DateTime? createTo = null;
+                    if (dateCreateFromTo != string.Empty)
+                    {
+                        var dateCre = dateCreateFromTo.Split('-');
+                        createFrom = DateTime.ParseExact(dateCre[0], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
+                        createTo = DateTime.ParseExact(dateCre[1], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
+                    }
 
-            DatagirdViewAction.setData(item, dataGridView1);
+                    var item = eService.getLinksProduct(name, status, domain, priceFrom, priceTo, updateFrom, updateTo, createFrom, createTo, this.checkBox1.Checked);
 
-            if (item.Count > 0)
-            {
-                button_createPr.Show();
-            }
+                    DatagirdViewAction.setData(item, dataGridView1);
+                }));
+            });
+
         }
 
+        private async void button_createPr_Click(object sender, EventArgs e)
+        {
+            await Task.Run(() =>
+            {
+                List<DataGridViewRow> rows = new List<DataGridViewRow>();
+                dataGridView1.Invoke((MethodInvoker)(() =>
+                {
+                    var selectedRows = dataGridView1.SelectedRows;
+                    for (int i = 0; i < selectedRows.Count; i++)
+                    {
+                        rows.Add(selectedRows[i]);
+                    }
+                }));
 
+                if (rows.Count == 0) return;
+                var datas = rows.Select(s => new Data()
+                {
+                    _id = s.Cells[0].Value.ToString(),
+                    url = s.Cells[1].Value.ToString(),
+                    status = int.Parse(s.Cells[2].Value.ToString()),
+                    name = s.Cells[3].Value.ToString(),
+                    price = double.Parse(s.Cells[4].Value.ToString())
+                });
+                var createForm = new FormCreateProduct(datas.ToList());
+                createForm.ShowDialog();
+
+            });
+
+
+        }
     }
 }
