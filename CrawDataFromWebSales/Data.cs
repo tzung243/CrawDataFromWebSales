@@ -20,20 +20,8 @@ namespace CrawDataFromWebSales
         //status 0: Moi 1: Thanh cong 2: Loi
         public int status { get; set; }
 
-
-
-
-        /*
-
-         public Data(string _id, string url, string name,  int status, string domain, DateTime? time_create = null, DateTime? time_update, )
-         {
-             this._id = _id;
-             this.url = url;
-             this.status = status;
-             this.time_crete = time == null ? DateTime.Now : time;
-             this.domain = domain;
-         }*/
-
+        public int is_belonged { get; set; }
+        public string product_id { get; set; }
         public Data() { }
         public Data(string url, string domain)
         {

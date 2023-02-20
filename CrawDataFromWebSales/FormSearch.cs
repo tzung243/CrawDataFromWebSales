@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,11 +13,16 @@ namespace CrawDataFromWebSales
 {
     public partial class FormSearch : Form
     {
+        EServicce eServicce;
         public FormSearch()
         {
             InitializeComponent();
         }
 
+        private void FormSearch_Load(object sender, EventArgs e)
+        {
+            eServicce = new EServicce();
+        }
         private void linksProduct_Click(object sender, EventArgs e)
         {
             Form1 home = new Form1();
@@ -33,5 +39,65 @@ namespace CrawDataFromWebSales
             FormProducts products = new FormProducts();
             FormsControl.switchMainForm(this,products);
         }
+
+        private async void button_search_Click(object sender, EventArgs e)
+        {
+            string name = textBox1.Text;
+            
+            string status_text = comboBox_status.Text;
+            int status = -1;
+            switch(status_text)
+            {
+                case "Moi":
+                    status = 0;
+                    break;
+                case "Thanh cong":
+                    status = 1;
+                    break;
+                case "Loi":
+                    status = 2;
+                    break;
+            }
+
+            string domain = comboBox_domain.Text;
+
+            string priceFromTo = textBox_price.Text;
+            double priceFrom = -1;
+            double priceTo = -1;
+            if(priceFromTo != string.Empty)
+            {
+                var price = priceFromTo.Split('-');
+                priceFrom = Convert.ToDouble(price[0]);
+                priceTo = Convert.ToDouble(price[1]);
+            }
+
+            string dateUpdateFromTo = tb_timeUpdate.Text;
+            DateTime? updateFrom = null;
+            DateTime? updateTo = null;
+            if(dateUpdateFromTo != string.Empty)
+            {
+                var dateUp = dateUpdateFromTo.Split('-');
+                updateFrom = DateTime.ParseExact(dateUp[0], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
+                updateTo = DateTime.ParseExact(dateUp[1], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
+            }
+
+            string dateCreateFromTo = tb_timeUpdate.Text;
+            DateTime? createFrom = null;
+            DateTime? createTo = null;
+            if (dateUpdateFromTo != string.Empty)
+            {
+                var dateCre = dateCreateFromTo.Split('-');
+                createFrom = DateTime.ParseExact(dateCre[0], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
+                createTo = DateTime.ParseExact(dateCre[1], "yyyy-MM-dd", CultureInfo.DefaultThreadCurrentCulture);
+            }
+
+            var item = eServicce.getLinksProduct(name, status, domain, priceFrom, priceTo, updateFrom, updateTo, createFrom, createTo, this.checkBox1.Checked);
+            var items = await eServicce.getLinksByName(name);
+
+            string text_search = textBox1.Text;
+           
+        }
+
+
     }
 }

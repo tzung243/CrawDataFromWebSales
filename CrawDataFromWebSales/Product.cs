@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace CrawDataFromWebSales
 {
     public class Product
     {
-        public string ID { get; set; }
+        public string _id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int Price { get; set; }
@@ -14,6 +13,6 @@ namespace CrawDataFromWebSales
         public int Status { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastUpdated { get; set; }
-        public List<string> Links { get; set; }
+        public int TotalLinks { get; set; }
     }
 }

@@ -33,5 +33,12 @@ namespace CrawDataFromWebSales
             Form1 home = new Form1();
             FormsControl.switchMainForm(this, home);
         }
+
+        private void button_search_Click(object sender, EventArgs e)
+        {
+            var item = menuStrip1.Text;
+            string text_string = textBox1.Text;
+            MessageBox.Show("a");
+        }
     }
 }
