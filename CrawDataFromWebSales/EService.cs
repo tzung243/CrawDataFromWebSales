@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace CrawDataFromWebSales
 {
-    public class EServicce
+    public class EService
     {
-        private ElasticClient Client { get; }
+        public ElasticClient Client { get; }
 
-        public EServicce()
+        public EService()
         {
             Client = new ElasticClient("craw_data:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvOjQ0MyQ3OGU2Y2Q2OWIwYWQ0NTczYWMwNDNkYThmNDdlZTE0ZiQ4YTM0NTJlMDBlYzU0NzE1YTA1MmQ1MDdjMWRlMDk4NA==",
               new Elasticsearch.Net.ApiKeyAuthenticationCredentials("T3R1c1NJWUJKdUNELWYxb2lhTUM6aWJ5TjNDcmVTYjJpT1BKTFlvUTlFZw=="));
@@ -135,6 +135,21 @@ namespace CrawDataFromWebSales
                                                             .Size(10)
                                                             .Index("test")
                                                             .Query(q => q.Bool(b => b.Filter(f => f.Term(t => t.is_belonged, isBelonged)))));
+            return resp.Documents.ToList();
+        }
+
+        public async Task<List<Data>> getOldestCrawledLinks(int size)
+        {
+            var resp = await Client.SearchAsync<Data>(s => s.Size(size)
+                                                            .Index("test")
+                                                            .Sort(sort => sort
+                                                                    .Script(sd => sd
+                                                                           .Type("number")
+                                                                           .Script(sdd => sdd
+                                                                                  .Source("if(doc['status'].value == 0) { return 0;}" +
+                                                                                           "if(doc['status'].value == 2) {return 1;} return 2;"))
+                                                                           .Ascending())
+                                                                    .Descending(desc => desc.time_load)));
             return resp.Documents.ToList();
         }
 
