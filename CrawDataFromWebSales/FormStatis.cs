@@ -53,7 +53,7 @@ namespace CrawDataFromWebSales
 
         private void productToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO
+            
         }
 
         private void homeToolStripMenuItem_Click(object sender, EventArgs e)
